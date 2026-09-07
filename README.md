@@ -7,7 +7,7 @@ Two tiers, by account:
 
 | `publish` | Rules | How |
 |---|---|---|
-| `true` | committed | `.github/workflows/sync.yml` fans out on every push to `rules/` |
+| `true` | committed | `.github/workflows/sync.yml` proposes checked PRs after `rules/` changes |
 | `false` | not committed | hydrated locally by `bin/sync` |
 
 Publishing gets you rules that travel to CI, cloud agents and fresh clones. Not
@@ -67,11 +67,19 @@ Keep whatever they need in that repo's committed `AGENTS.md`.
 
 ## CI
 
-`sync.yml` runs on push to `rules/**` or `manifest.toml`, clones each
-publishing target, runs `bin/sync --apply`, and commits as
-`github-actions[bot]`. It needs a repo secret **`SYNC_TOKEN`** — a fine-grained
-PAT owned by engels74 with **Contents: Read and write** on the 14 target repos.
-Fine-grained PATs expire within a year; the failure mode is a silent stop.
+Development CI validates public rule references, file shape and sync behavior on
+isolated fixtures. See [CI.md](CI.md).
+
+`sync.yml` runs after changes to `rules/**` or `manifest.toml`. It uses at most
+three concurrent jobs, resolves each consumer's configured default branch and
+proposes changes through `fix/sync-agent-rules`. It never pushes a default branch.
+The existing **`SYNC_TOKEN`** needs **Contents: Read and write** and
+**Pull requests: Read and write** on the public publishing targets. No new token
+is created by this change. PRs created with this token trigger ordinary consumer
+CI and remain subject to required checks. Token expiry or insufficient scope
+fails the corresponding workflow job; it must be corrected by the token owner.
+
+Local-only consumer manifests are never read by this workflow or published here.
 
 ## Adding a rule
 

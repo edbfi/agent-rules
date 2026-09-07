@@ -1,9 +1,4 @@
 name: sync rules
-
-# Fans the canonical rules out to every repo with `publish = true`.
-# Repos listed only in a local manifest are hydrated by bin/sync and never
-# reach CI.
-
 on:
   push:
     branches: [main]
@@ -12,73 +7,82 @@ on:
       - 'manifest.toml'
       - '.github/workflows/sync.yml'
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
   group: sync-rules
   cancel-in-progress: false
-
 jobs:
-  sync:
-    runs-on: ubuntu-latest
+  targets:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      repositories: ${{ steps.targets.outputs.repositories }}
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Resolve publishing targets
-        run: |
-          awk '
-            function q(line,   out,n,i,arr) {
-              out=""; n=split(line, arr, "\"")
-              for (i=2; i<=n; i+=2) out = out (out=="" ? "" : " ") arr[i]
-              return out
-            }
-            function emit() { if (s!="" && pb=="true" && r!="") print s }
-            /^\[\[repo\]\]/         { emit(); s=""; r=""; pb="false"; next }
-            /^[[:space:]]*slug/     { s=q($0); next }
-            /^[[:space:]]*rules/    { r=q($0); next }
-            /^[[:space:]]*publish/  { pb=($0 ~ /true/) ? "true" : "false"; next }
-            END                     { emit() }
-          ' manifest.toml | tee targets.txt
-          echo "targets: $(wc -l < targets.txt)"
-
-      - name: Sync
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - id: targets
+        run: python3 .github/scripts/check-content.py --targets >> "$GITHUB_OUTPUT"
+  sync:
+    needs: targets
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        repository: ${{ fromJSON(needs.targets.outputs.repositories) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          path: canonical
+          persist-credentials: false
+      - name: Resolve the consumer default branch
+        id: base
         env:
           GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+          TARGET_REPOSITORY: ${{ matrix.repository }}
         run: |
-          set -uo pipefail
-          [ -n "${GH_TOKEN:-}" ] || { echo "::error::SYNC_TOKEN is not set"; exit 1; }
+          test -n "$GH_TOKEN"
+          base=$(gh api "repos/$TARGET_REPOSITORY" --jq .default_branch)
+          test -n "$base"
+          echo "branch=$base" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7.0.1
+        with:
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.base.outputs.branch }}
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: targets/consumer
+          persist-credentials: false
+      - name: Hydrate only the isolated consumer checkout
+        env:
+          TARGET_REPOSITORY: ${{ matrix.repository }}
+        run: |
+          AGENT_RULES_ROOT="$GITHUB_WORKSPACE/targets" \
+            XDG_CONFIG_HOME="$RUNNER_TEMP/no-local-manifest" \
+            bash canonical/bin/sync --apply "$TARGET_REPOSITORY"
+      - name: Propose a checked rules update
+        uses: peter-evans/create-pull-request@v8.1.1
+        with:
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: targets/consumer
+          base: ${{ steps.base.outputs.branch }}
+          branch: fix/sync-agent-rules
+          add-paths: .agents/rules
+          signoff: true
+          commit-message: 'chore(rules): sync canonical agent guidance'
+          title: 'chore(rules): sync canonical agent guidance'
+          body: |
+            Update the published rules from engels74/agent-rules.
 
-          ROOT="$RUNNER_TEMP/repos"; mkdir -p "$ROOT"
-          git config --global user.name  "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            Canonical content and public manifest validation passed. The sync
+            preserves the public opt-in list, prunes replaced filenames and
+            verifies copied bytes. Review any toolchain-floor implications and
+            merge after the consumer's required development CI passes.
 
-          fail=0
-          while read -r slug; do
-            [ -n "$slug" ] || continue
-            dest="$ROOT/$slug"; mkdir -p "$(dirname "$dest")"
-
-            if ! git clone -q --depth 1 \
-                 "https://x-access-token:${GH_TOKEN}@github.com/${slug}.git" "$dest"; then
-              echo "::error::clone failed: $slug"; fail=1; continue
-            fi
-
-            if ! AGENT_RULES_ROOT="$ROOT" ./bin/sync --apply "$slug"; then
-              echo "::error::sync failed: $slug"; fail=1; continue
-            fi
-
-            if [ -z "$(git -C "$dest" status --porcelain)" ]; then
-              echo "unchanged  $slug"; continue
-            fi
-
-            git -C "$dest" add -A .agents/rules
-            git -C "$dest" commit -q -m "chore: sync agent rules from agent-rules"
-            if git -C "$dest" push -q origin HEAD; then
-              echo "pushed     $slug"
-            else
-              echo "::error::push failed: $slug (branch protection?)"; fail=1
-            fi
-          done < targets.txt
-
-          exit $fail
+            This PR uses the existing sync token, so normal pull-request
+            workflows run. Missing or unsuccessful required checks block merging.

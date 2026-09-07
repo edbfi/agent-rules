@@ -4,8 +4,9 @@
 
 The single source of truth for `.agents/rules/*.md` across my projects.
 Content only, plus one shell script. There is no package manifest,
-lockfile, build step, test suite, or CI workflow, and none should be added
-without being asked.
+lockfile or build step. CI validates canonical content, the public manifest,
+ShellCheck and isolated sync behavior; see `CI.md`. Run
+`python3 -m unittest discover -s tests -v` without touching real consumers.
 
 ## Hard rules
 
