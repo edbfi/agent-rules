@@ -28,6 +28,7 @@ class GitHub:
         self.commit = None
         self.source_sha = SHA
         self.ci = "success"
+        self.ci_runs = None
         self.mode = "100644"
         self.truncated = False
 
@@ -38,7 +39,9 @@ class GitHub:
             if "/branches/" in endpoint:
                 return {"commit": {"sha": self.source_sha}}
             if "/actions/" in endpoint:
-                return {"workflow_runs": [{"head_sha": SHA, "conclusion": self.ci}]}
+                return {"workflow_runs": self.ci_runs if self.ci_runs is not None else [
+                    {"head_sha": SHA, "head_branch": "main", "event": "push",
+                     "status": "completed", "conclusion": self.ci}]}
             return {"id": 1343246959, "default_branch": "main"}
         if payload is not None:
             self.writes.append((endpoint, payload))
@@ -180,6 +183,28 @@ class Delivery(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.publish(plan, gh)
             self.assertEqual(gh.writes, [])
+
+    def test_final_ci_accepts_push_and_dispatch_but_rejects_ineligible_runs(self):
+        good = {"head_sha": SHA, "head_branch": "main", "event": "push",
+                "status": "completed", "conclusion": "success"}
+        for event in ["push", "workflow_dispatch"]:
+            with self.subTest(event=event):
+                gh = GitHub()
+                gh.ci_runs = [{**good, "event": event}]
+                d.source_ready(SHA, gh)
+        bad_rows = [[], [{**good, "event": "pull_request"}],
+                    [{**good, "head_sha": BASE}], [{**good, "head_branch": "feature"}],
+                    [{**good, "status": "in_progress", "conclusion": None}, good],
+                    [{**good, "conclusion": "failure"}, good],
+                    [{**good, "conclusion": "cancelled"}, good],
+                    [{**good, "conclusion": "skipped"}, good]]
+        for rows in bad_rows:
+            with self.subTest(rows=rows):
+                gh = GitHub()
+                gh.ci_runs = rows
+                with self.assertRaisesRegex(ValueError, "Exact final CI"):
+                    self.publish(self.plan(gh), gh)
+                self.assertEqual(gh.writes, [])
 
     def test_existing_matching_branch_and_pr_are_idempotent(self):
         gh = GitHub()

@@ -126,9 +126,13 @@ def source_ready(sha, request=api):
     require(repo["id"] == 1343246959, "Wrong canonical repository")
     branch = request("repos/" + SOURCE + "/branches/" + quote(repo["default_branch"], safe=""), source=True)
     require(branch["commit"]["sha"] == sha, "Canonical default branch moved")
-    runs = request("repos/" + SOURCE + "/actions/workflows/ci.yml/runs?event=push&head_sha=" + sha, source=True)
-    require(runs["workflow_runs"] and runs["workflow_runs"][0]["head_sha"] == sha
-            and runs["workflow_runs"][0]["conclusion"] == "success", "Exact final CI has not passed")
+    runs = request("repos/" + SOURCE + "/actions/workflows/ci.yml/runs?head_sha=" + sha
+                   + "&branch=" + quote(repo["default_branch"], safe=""), source=True)
+    final = next((run for run in runs["workflow_runs"]
+                  if run["event"] in {"push", "workflow_dispatch"}), None)
+    require(final and final["head_sha"] == sha and final["head_branch"] == repo["default_branch"]
+            and final["status"] == "completed" and final["conclusion"] == "success",
+            "Exact final CI has not passed")
 
 
 def publish(plan, root=ROOT, request=api):
