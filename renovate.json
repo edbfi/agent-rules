@@ -1,7 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>edbfi/automation:default#v1.0.0"
+    "github>edbfi/automation//default.json#v1.1.0",
+    "github>edbfi/automation//automerge.json#v1.1.0"
   ],
   "customManagers": [
     {
@@ -19,24 +20,11 @@
   ],
   "packageRules": [
     {
-      "description": "Keep rule-file pins in their own PR for prose and consumer toolchain review. Delivery remains a separate manual action.",
+      "description": "Keep rule-file pins grouped. Delivery remains a separate manual action.",
       "matchManagers": [
         "custom.regex"
       ],
       "groupName": "rule-file pins"
-    },
-    {
-      "description": "TypeScript is held at 5.9 deliberately. 7.x is the Go rewrite, and the rule text leans on 5.8/5.9 semantics (erasableSyntaxOnly, verbatimModuleSyntax). Bumping it is a migration decision across every consumer, not drift cleanup.",
-      "matchManagers": [
-        "custom.regex"
-      ],
-      "matchPackageNames": [
-        "typescript"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "enabled": false
     }
   ]
 }

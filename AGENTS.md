@@ -11,7 +11,8 @@ preview/PR delivery. No local hydration or checkout discovery is supported.
   Remove only explicitly named, hash-matched obsolete rules in the same PR as
   their replacement. Unexpected managed-file edits are conflicts.
 - Compare exact hashes and source/base revisions. Never force-push, merge
-  automatically, or introduce branch protections/rulesets.
+  delivery PRs automatically, or introduce branch protections/rulesets.
+  Renovate dependency PRs use the checked unattended CI policy in CI.md.
 - Test through `python3 -m unittest discover -s tests -v`; fixtures must not
   contact real consumers. Delivery CLI execution is restricted to manual CI.
 - Reconcile project toolchain requirements before reviewing a rule update.
