@@ -1,94 +1,67 @@
 # agent-rules
 
-Canonical `.agents/rules/*.md` for my projects. One file per stack,
-hand-edited, no build step.
+Twelve canonical, flat Markdown rule files for explicitly opted-in edbfi projects.
+Source files are the artifact; no application build or local hydration is needed.
 
-Two tiers, by account:
+## Delivery
 
-| `publish` | Rules | How |
-|---|---|---|
-| `true` | committed | `.github/workflows/sync.yml` proposes checked PRs after `rules/` changes |
-| `false` | not committed | hydrated locally by `bin/sync` |
+Delivery runs only through manually dispatched GitHub workflows. It reads the
+public manifest and isolated GitHub repository trees. It never discovers local
+checkouts, reads local manifests, edits hooks/excludes or touches developer files.
 
-Publishing gets you rules that travel to CI, cloud agents and fresh clones. Not
-publishing leaves nothing in the repo at all — see [Why the split](#why-the-split).
+1. Review and merge canonical changes, then wait for the exact final `ci` run.
+2. Dispatch **preview rules** on the default branch with its full commit SHA and
+   one opted-in `edbfi/repository` slug.
+3. Download `rules-plan`. Review `changes.diff`, every path and old/new hash in
+   `plan.json`, the consumer base, and project toolchain requirements. Record the
+   preview run ID and SHA256 of the exact `plan.json` bytes.
+4. Dispatch **sync rules** with the same source/target, preview run and plan hash.
+   This writer remains disabled until its credential and initial pilot are ready.
+   It rejects stale source/base, altered artifacts, unexpected consumer edits and
+   unsafe paths. A matching tree produces no PR.
+5. Review the generated PR's exact head/base, full diff, author/sign-off, every
+   expected CI job and relevant artifacts. Merge manually with the maintainer's
+   reviewed `ghmerge` procedure, then verify final CI. Automerge is off; no branch
+   protections or rulesets are part of this process. Preserve consumer prek files.
 
-## Layout
+The writer creates a new `chore/agent-rules-<source SHA prefix>` branch. It never
+force-pushes or writes a default branch. An identical open PR is reported; a
+conflicting branch or closed PR is preserved and stops delivery. Repository
+changes can still occur after a final API read: the PR's recorded base and normal
+manual review remain authoritative; this is not an atomic lock on GitHub.
 
-```
-rules/           12 canonical files, flat — source is the artifact
-manifest.toml    origin slug -> rules, keyed on the remote, never on path
-bin/sync         hydrate, de-publish, prune, verify
-docs/            toolchain floors and other cross-repo facts
-```
+## Manifest and conflict handling
 
-## Usage
+`publish` defaults to false. Every public target is an explicit opt-in in
+`manifest.toml`; other owners and excluded projects are rejected. Canonical rule
+changes do not add consumers automatically. Keep the manifest public-only.
 
-```sh
-bin/sync                      # dry run over every repo (default)
-bin/sync --apply              # act
-bin/sync engels74/wings-vpn   # limit to one slug
-```
+`accepted` records the SHA256 of reviewed previous rule bytes. Existing consumers
+must match either the desired bytes or an accepted previous version. Add a prior
+canonical hash deliberately when updating a rule; never bless a custom consumer
+edit merely to get a green run. Files absent in a consumer may be added.
 
-`bin/sync` never commits and never pushes. It stages removals and leaves them
-for review; `includeIf.gitdir` picks the right identity when you push.
+Unrelated/custom rule files are preserved. To rename a managed rule, include an
+explicit `[repo.remove]` old filename and its reviewed SHA256 in that target's
+entry. The replacement and removal travel in one PR. Nothing else is pruned.
 
-Requires bash >= 4 (macOS ships 3.2 — `brew install bash`).
+## Credentials
 
-## Why the split
+Read-only validation/preview uses the automatic GitHub job token. Only the writer
+uses `RULES_SYNC_TOKEN`: a fresh fine-grained token named `edbfi-agent-rules-sync`,
+owned by edbfi, scoped to the nine manifest targets with Contents and Pull requests
+read/write (Metadata read is implicit). No Workflows, Administration or Packages
+permission is needed. The user selects no expiry and generates/captures the value.
+Never commit or log it. Old tokens are not reused or revoked by this migration.
+The source repository is public and need not be in the PAT's selected targets.
 
-Not every repo should carry these files. A long, distinctive rule file
-committed in two places is trivially correlated — the 16 exact dependency pins
-alone survive any paraphrasing — so some repos are hydrated locally instead and
-commit nothing.
+## Development
 
-Targets live in two places: `manifest.toml` for published repos, and an
-optional `manifest.local.toml` for repos that should never appear in a public
-list. `bin/sync` reads both.
-
-The local manifest is resolved outside this worktree, first match wins:
-
-1. `$AGENT_RULES_LOCAL_MANIFEST`
-2. `$XDG_CONFIG_HOME/agent-rules/manifest.local.toml` (default `~/.config`)
-3. `./manifest.local.toml` — legacy fallback, gitignored
-
-Prefer 2. In-tree it was unpushable but still deletable by `git clean -xdf`,
-missing from a fresh clone, and one `git add -f` from being staged.
-
-For `publish = false` repos, exclusion is written to `.git/info/exclude` rather
-than `.gitignore`, because `.gitignore` is itself committed — a shared ignore
-line would be a (weak) fingerprint of its own. `bin/sync` de-publishes tracked
-files *before* excluding them (git ignores exclude rules for already-tracked
-paths) and then asserts `git check-ignore` passes, so a stray `git add -A`
-cannot leak a file.
-
-**Tradeoff:** cloud agents on non-publishing repos will not see these rules.
-Keep whatever they need in that repo's committed `AGENTS.md`.
-
-## CI
-
-Development CI validates public rule references, file shape and sync behavior on
-isolated fixtures. See [CI.md](CI.md).
-
-`sync.yml` runs after changes to `rules/**` or `manifest.toml`. It uses at most
-three concurrent jobs, resolves each consumer's configured default branch and
-proposes changes through `fix/sync-agent-rules`. It never pushes a default branch.
-The existing **`SYNC_TOKEN`** needs **Contents: Read and write** and
-**Pull requests: Read and write** on the public publishing targets. No new token
-is created by this change. PRs created with this token trigger ordinary consumer
-CI and remain subject to required checks. Token expiry or insufficient scope
-fails the corresponding workflow job; it must be corrected by the token owner.
-
-Local-only consumer manifests are never read by this workflow or published here.
-
-## Adding a rule
-
-1. Write `rules/<name>.md`.
-2. Add `<name>` to the relevant `[[repo]]` entries in `manifest.toml`.
-3. `bin/sync` to preview, `bin/sync --apply` to land.
-
-Reconcile the toolchain floor in `docs/toolchain-floors.md` first — see that
-file for why a floor mismatch is a silent CI outage rather than a warning.
+Run `python3 .github/scripts/check-content.py`,
+`python3 -m unittest discover -s tests -v` and `actionlint`.
+Tests use disposable local fixtures and a stub GitHub API; they never sync real
+consumers. See [CI.md](CI.md) and [toolchain notes](docs/toolchain-floors.md).
+The old local synchronizer remains recoverable in repository history.
 
 ## License
 

@@ -1,88 +1,54 @@
 name: sync rules
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'rules/**'
-      - 'manifest.toml'
-      - '.github/workflows/sync.yml'
   workflow_dispatch:
+    inputs:
+      target:
+        description: Exact opted-in edbfi repository slug
+        required: true
+        type: string
+      source-sha:
+        description: Reviewed canonical default-branch SHA with successful final CI
+        required: true
+        type: string
+      preview-run:
+        description: Successful preview workflow run ID reviewed by the maintainer
+        required: true
+        type: string
+      plan-sha256:
+        description: Reviewed plan.json SHA256 from that run
+        required: true
+        type: string
 permissions:
   contents: read
+  actions: read
 concurrency:
-  group: sync-rules
+  group: rules-delivery-${{ inputs.target }}
   cancel-in-progress: false
 jobs:
-  targets:
-    if: github.ref_name == github.event.repository.default_branch
+  delivery:
+    if: github.repository == 'edbfi/agent-rules' && github.ref_name == github.event.repository.default_branch && github.sha == inputs.source-sha
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    outputs:
-      repositories: ${{ steps.targets.outputs.repositories }}
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7.0.1
         with:
-          ref: ${{ github.event.repository.default_branch }}
+          ref: ${{ github.sha }}
           persist-credentials: false
-      - id: targets
-        run: python3 .github/scripts/check-content.py --targets >> "$GITHUB_OUTPUT"
-  sync:
-    needs: targets
-    strategy:
-      fail-fast: false
-      max-parallel: 3
-      matrix:
-        repository: ${{ fromJSON(needs.targets.outputs.repositories) }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          path: canonical
-          persist-credentials: false
-      - name: Resolve the consumer default branch
-        id: base
+      - name: Download the reviewed preview artifact
         env:
-          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
-          TARGET_REPOSITORY: ${{ matrix.repository }}
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_RUN: ${{ inputs.preview-run }}
+        run: |
+          [[ "$PREVIEW_RUN" =~ ^[0-9]+$ ]]
+          gh run download "$PREVIEW_RUN" --repo edbfi/agent-rules --name rules-plan --dir "$RUNNER_TEMP/rules-plan"
+      - name: Publish only the unchanged reviewed plan
+        env:
+          GH_TOKEN: ${{ secrets.RULES_SYNC_TOKEN }}
+          SOURCE_TOKEN: ${{ github.token }}
+          TARGET: ${{ inputs.target }}
+          SOURCE_SHA: ${{ inputs.source-sha }}
+          PREVIEW_RUN: ${{ inputs.preview-run }}
+          PLAN_SHA256: ${{ inputs.plan-sha256 }}
         run: |
           test -n "$GH_TOKEN"
-          base=$(gh api "repos/$TARGET_REPOSITORY" --jq .default_branch)
-          test -n "$base"
-          echo "branch=$base" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v7.0.1
-        with:
-          repository: ${{ matrix.repository }}
-          ref: ${{ steps.base.outputs.branch }}
-          token: ${{ secrets.SYNC_TOKEN }}
-          path: targets/consumer
-          persist-credentials: false
-      - name: Hydrate only the isolated consumer checkout
-        env:
-          TARGET_REPOSITORY: ${{ matrix.repository }}
-        run: |
-          AGENT_RULES_ROOT="$GITHUB_WORKSPACE/targets" \
-            XDG_CONFIG_HOME="$RUNNER_TEMP/no-local-manifest" \
-            bash canonical/bin/sync --apply "$TARGET_REPOSITORY"
-      - name: Propose a checked rules update
-        uses: peter-evans/create-pull-request@v8.1.1
-        with:
-          token: ${{ secrets.SYNC_TOKEN }}
-          path: targets/consumer
-          base: ${{ steps.base.outputs.branch }}
-          branch: fix/sync-agent-rules
-          add-paths: .agents/rules
-          signoff: true
-          commit-message: 'chore(rules): sync canonical agent guidance'
-          title: 'chore(rules): sync canonical agent guidance'
-          body: |
-            Update the published rules from engels74/agent-rules.
-
-            Canonical content and public manifest validation passed. The sync
-            preserves the public opt-in list, prunes replaced filenames and
-            verifies copied bytes. Review any toolchain-floor implications and
-            merge after the consumer's required development CI passes.
-
-            This PR uses the existing sync token, so normal pull-request
-            workflows run. Missing or unsuccessful required checks block merging.
+          python3 .github/scripts/delivery.py publish --target "$TARGET" --source-sha "$SOURCE_SHA" --preview-run "$PREVIEW_RUN" --plan-sha256 "$PLAN_SHA256" --output "$RUNNER_TEMP/rules-plan"

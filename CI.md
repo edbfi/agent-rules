@@ -1,33 +1,34 @@
-# Development CI and publishing
+# Validation and manual delivery
 
-Every PR/default-branch push validates the 12 canonical rule files and the public
-manifest: opt-in publishing, unique public slugs, existing safe rule identifiers,
-metadata/title and LF-terminated content. Bash parsing and ShellCheck cover the
-sync tool. Three integration tests exercise the actual script using disposable
-Git repositories: dry-run preservation, de-publishing before exclusion, pruning,
-byte-identical copies, idempotence and restoration of chained hooks when opting in.
-Run `python3 .github/scripts/check-content.py`, `shellcheck bin/sync` and
-`python3 -m unittest discover -s tests -v` locally. No real consumer sync is needed.
+The `ci` workflow runs on PRs, default-branch pushes and explicit repair dispatch.
+Expected jobs: `guard`, `content`, `ci / required`. Versioned edbfi shared guards
+check dispatch identity and reject missing/skipped/failed prerequisites.
 
-The shared `ci / required` gate fails on missing, skipped, cancelled or failed
-prerequisites and verifies explicit PR dispatch identities. Validation is
-read-only; action references are full version tags. Renovate inherits the
-versioned shared base preset. Rule prose and consumer runtime floors are not
-silently updated by dependency maintenance.
+Content checks validate canonical Markdown shape, the edbfi-only opt-in manifest,
+unique safe identifiers, and accepted previous hashes. Python compilation and
+isolated planner/writer tests cover actual diff generation, no-op behavior,
+conflicts, explicit rename removal, preservation of custom files, unsafe paths,
+source/base drift, failed final CI, altered plans, and branch/PR idempotence.
+No real consumer is touched by these tests. Workflow syntax is checked locally
+with actionlint before PR review. Rule prose and dependency accuracy require
+separate human review; existing canonical bytes are preserved in this migration.
 
-The publisher now proposes consumer PRs using the existing SYNC_TOKEN, with
-explicit default branches, a dedicated branch, only `.agents/rules` changes and
-at most three concurrent targets. That token must have Contents and Pull requests
-write access on the already-published target list. Unlike GITHUB_TOKEN-generated
-PRs, these PRs start normal consumer workflows. Required checks block merging when
-CI is missing or unsuccessful; the publisher never bypasses branch protection.
-The local-only manifest remains outside this workflow, and no private targets
-are added to public configuration. Existing rule files and public membership are
-unchanged by this rollout.
+`preview rules` and `sync rules` are manual workflows on the canonical default
+branch only. Both pin the checkout and verify successful exact-source final CI.
+Preview uploads the exact plan, unified diff and SHA256 receipt. Publishing verifies
+preview provenance, the maintainer-supplied hash, target identity, current source
+and consumer base; it regenerates and compares the entire plan before creating
+GitHub blobs/tree/signed-off commit/new branch and proposing a PR. It never changes
+an existing ref. Branch collisions remain intact. API objects created before a
+later guard fails may remain unreachable; no default branch is changed.
 
-Protect the default branch with strict up-to-date `ci / required` from GitHub
-Actions, enforce administrators, disallow force pushes/deletions and require no
-blanket reviews. Consumer merges still need toolchain-floor review when rules
-change: syntax/content CI does not prove that prose accurately describes every
-language version. Verify token scope and a real generated PR after the consumer
-CI rollout. Automerge stays off until shared-policy readiness is confirmed.
+The source job token is read-only. RULES_SYNC_TOKEN is confined to the writer
+step and required for real PRs to trigger ordinary consumer CI. The writer stays
+disabled until the newly generated token and a real reviewed pilot are ready.
+Schedules and automatic fan-out are not enabled. Initial unchanged consumers must
+report no-op; never manufacture changes solely to test permissions.
+
+All merges require exact head/base, full diff, authors/DCO, every expected CI job
+and applicable artifacts, and the actual maintainer ghmerge wrapper. Verify the
+published tree and full final CI afterwards. No branch protection/rulesets or
+automerge; preserve prek. Planning projects remain planning projects.

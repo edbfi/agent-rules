@@ -1,28 +1,14 @@
 """Check public rule references without reading local-only manifests or consumers."""
 import json
 from pathlib import Path
-import re
 import sys
-import tomllib
+
+from delivery import manifest
 
 root = Path(__file__).resolve().parents[2]
-manifest = tomllib.loads((root / "manifest.toml").read_text())
-assert manifest["defaults"]["publish"] is False, "Publishing must be opt-in"
-assert manifest["defaults"]["exclude_via"] == "info"
-slugs = set()
-publishing = []
-for entry in manifest["repo"]:
-    slug = entry["slug"]
-    assert re.fullmatch(r"engels74/[A-Za-z0-9_.-]+", slug), "Unexpected public owner or slug"
-    assert slug not in slugs, f"Duplicate public target: {slug}"
-    slugs.add(slug)
-    rules = entry["rules"]
-    assert rules and len(rules) == len(set(rules)), f"Invalid rule list: {slug}"
-    for rule in rules:
-        assert re.fullmatch(r"[a-z0-9_-]+", rule), f"Invalid rule identifier: {rule}"
-        assert (root / "rules" / f"{rule}.md").is_file(), f"Missing canonical rule: {rule}"
-    if entry.get("publish", False) and not entry.get("archived", False):
-        publishing.append(slug)
+manifest_data = manifest(root)
+slugs = [entry["slug"] for entry in manifest_data["repo"]]
+publishing = slugs
 files = list((root / "rules").glob("*.md"))
 assert files, "No canonical rules found"
 for path in files:

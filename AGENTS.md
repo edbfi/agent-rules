@@ -1,39 +1,22 @@
 # agent-rules — working notes
 
-## What this repo is
+Twelve flat canonical Markdown rules, a public opt-in manifest, and CI-only
+preview/PR delivery. No local hydration or checkout discovery is supported.
 
-The single source of truth for `.agents/rules/*.md` across my projects.
-Content only, plus one shell script. There is no package manifest,
-lockfile or build step. CI validates canonical content, the public manifest,
-ShellCheck and isolated sync behavior; see `CI.md`. Run
-`python3 -m unittest discover -s tests -v` without touching real consumers.
+- Preserve canonical rule bytes during delivery maintenance. Keep one flat file
+  per stack; no concatenation or generated reference hierarchy.
+- Publish defaults to false. Only explicit edbfi targets may receive PRs. Never
+  add private/local manifests or excluded projects to public configuration.
+- Preserve unrelated consumer files, prek configurations and local state.
+  Remove only explicitly named, hash-matched obsolete rules in the same PR as
+  their replacement. Unexpected managed-file edits are conflicts.
+- Compare exact hashes and source/base revisions. Never force-push, merge
+  automatically, or introduce branch protections/rulesets.
+- Test through `python3 -m unittest discover -s tests -v`; fixtures must not
+  contact real consumers. Delivery CLI execution is restricted to manual CI.
+- Reconcile project toolchain requirements before reviewing a rule update.
+  Existing project minimum versions take precedence over examples in generic
+  guidance. Verify official registries/release documentation when changing pins;
+  content-shape validation alone does not prove rule prose correct.
 
-## Hard rules
-
-- **`publish` defaults to `false`.** A repo commits its rule files only by
-  opting in. Repos that must not appear in a public target list belong in
-  the local manifest, resolved outside the worktree (see README). Never move
-  those entries into `manifest.toml`, and never add a path under
-  `$XDG_CONFIG_HOME` to a committed file.
-- **Key on the origin remote slug.** Local directory names do not match slugs
-  (`engels74/afisharr` lives at `afisharr-project/afisharr`; `poyo-studio` has a
-  second checkout at `poyo-local`). Never infer a repo from its path.
-- **Prune in the same pass as the write.** Every consumer's old filename differs
-  from its new one. A repo left holding both gets contradictory guidance.
-- **De-publish before excluding.** Git ignores exclude rules for already-tracked
-  paths, so `git rm --cached` must come first or the guard silently does nothing.
-- **Verify the copy.** Compare checksums after writing. A truncated or
-  re-encoded copy is otherwise invisible.
-- **Reconcile toolchain floors before syncing**, not after. See
-  `docs/toolchain-floors.md`.
-
-## Editing a rule file
-
-One flat file per stack. Do not split into `references/` — consumers read a
-single `.md` from `.agents/rules/`, and a split would require a concatenation
-step this repo deliberately does not have.
-
-Check dependency pins against the registry before trusting them. The canonical
-files were generated in bulk; one shipped a package that has never existed and
-four pins a full major generation stale. A drifted repo copy affects one repo;
-a drifted canonical file affects every consumer at once.
+See README.md, CI.md and docs/toolchain-floors.md for the delivery contract.
