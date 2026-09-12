@@ -1,84 +1,54 @@
 name: sync rules
-
-# Fans the canonical rules out to every repo with `publish = true`.
-# Repos listed only in a local manifest are hydrated by bin/sync and never
-# reach CI.
-
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'rules/**'
-      - 'manifest.toml'
-      - '.github/workflows/sync.yml'
   workflow_dispatch:
-
+    inputs:
+      target:
+        description: Exact opted-in edbfi repository slug
+        required: true
+        type: string
+      source-sha:
+        description: Reviewed canonical default-branch SHA with successful final CI
+        required: true
+        type: string
+      preview-run:
+        description: Successful preview workflow run ID reviewed by the maintainer
+        required: true
+        type: string
+      plan-sha256:
+        description: Reviewed plan.json SHA256 from that run
+        required: true
+        type: string
 permissions:
   contents: read
-
+  actions: read
 concurrency:
-  group: sync-rules
+  group: rules-delivery-${{ inputs.target }}
   cancel-in-progress: false
-
 jobs:
-  sync:
-    runs-on: ubuntu-latest
+  delivery:
+    if: github.repository == 'edbfi/agent-rules' && github.ref_name == github.event.repository.default_branch && github.sha == inputs.source-sha
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Resolve publishing targets
-        run: |
-          awk '
-            function q(line,   out,n,i,arr) {
-              out=""; n=split(line, arr, "\"")
-              for (i=2; i<=n; i+=2) out = out (out=="" ? "" : " ") arr[i]
-              return out
-            }
-            function emit() { if (s!="" && pb=="true" && r!="") print s }
-            /^\[\[repo\]\]/         { emit(); s=""; r=""; pb="false"; next }
-            /^[[:space:]]*slug/     { s=q($0); next }
-            /^[[:space:]]*rules/    { r=q($0); next }
-            /^[[:space:]]*publish/  { pb=($0 ~ /true/) ? "true" : "false"; next }
-            END                     { emit() }
-          ' manifest.toml | tee targets.txt
-          echo "targets: $(wc -l < targets.txt)"
-
-      - name: Sync
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download the reviewed preview artifact
         env:
-          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_RUN: ${{ inputs.preview-run }}
         run: |
-          set -uo pipefail
-          [ -n "${GH_TOKEN:-}" ] || { echo "::error::SYNC_TOKEN is not set"; exit 1; }
-
-          ROOT="$RUNNER_TEMP/repos"; mkdir -p "$ROOT"
-          git config --global user.name  "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          fail=0
-          while read -r slug; do
-            [ -n "$slug" ] || continue
-            dest="$ROOT/$slug"; mkdir -p "$(dirname "$dest")"
-
-            if ! git clone -q --depth 1 \
-                 "https://x-access-token:${GH_TOKEN}@github.com/${slug}.git" "$dest"; then
-              echo "::error::clone failed: $slug"; fail=1; continue
-            fi
-
-            if ! AGENT_RULES_ROOT="$ROOT" ./bin/sync --apply "$slug"; then
-              echo "::error::sync failed: $slug"; fail=1; continue
-            fi
-
-            if [ -z "$(git -C "$dest" status --porcelain)" ]; then
-              echo "unchanged  $slug"; continue
-            fi
-
-            git -C "$dest" add -A .agents/rules
-            git -C "$dest" commit -q -m "chore: sync agent rules from agent-rules"
-            if git -C "$dest" push -q origin HEAD; then
-              echo "pushed     $slug"
-            else
-              echo "::error::push failed: $slug (branch protection?)"; fail=1
-            fi
-          done < targets.txt
-
-          exit $fail
+          [[ "$PREVIEW_RUN" =~ ^[0-9]+$ ]]
+          gh run download "$PREVIEW_RUN" --repo edbfi/agent-rules --name rules-plan --dir "$RUNNER_TEMP/rules-plan"
+      - name: Publish only the unchanged reviewed plan
+        env:
+          GH_TOKEN: ${{ secrets.RULES_SYNC_TOKEN }}
+          SOURCE_TOKEN: ${{ github.token }}
+          TARGET: ${{ inputs.target }}
+          SOURCE_SHA: ${{ inputs.source-sha }}
+          PREVIEW_RUN: ${{ inputs.preview-run }}
+          PLAN_SHA256: ${{ inputs.plan-sha256 }}
+        run: |
+          test -n "$GH_TOKEN"
+          python3 .github/scripts/delivery.py publish --target "$TARGET" --source-sha "$SOURCE_SHA" --preview-run "$PREVIEW_RUN" --plan-sha256 "$PLAN_SHA256" --output "$RUNNER_TEMP/rules-plan"

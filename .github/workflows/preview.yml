@@ -1,0 +1,41 @@
+name: preview rules
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Exact opted-in edbfi repository slug
+        required: true
+        type: string
+      source-sha:
+        description: Reviewed canonical default-branch SHA with successful final CI
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: rules-delivery-${{ inputs.target }}
+  cancel-in-progress: false
+jobs:
+  delivery:
+    if: github.repository == 'edbfi/agent-rules' && github.ref_name == github.event.repository.default_branch && github.sha == inputs.source-sha
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Generate exact read-only plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_TOKEN: ${{ github.token }}
+          TARGET: ${{ inputs.target }}
+          SOURCE_SHA: ${{ inputs.source-sha }}
+        run: python3 .github/scripts/delivery.py preview --target "$TARGET" --source-sha "$SOURCE_SHA" --output "$RUNNER_TEMP/rules-plan"
+      - uses: actions/upload-artifact@v7.0.0
+        with:
+          name: rules-plan
+          path: ${{ runner.temp }}/rules-plan/
+          if-no-files-found: error
+          retention-days: 14
