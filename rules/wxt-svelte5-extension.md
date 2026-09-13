@@ -41,15 +41,15 @@ Target the latest mutually compatible stable line of each tool. The one constrai
     "@unocss/preset-wind4": "66.9.2",
     "svelte": "5.57.0",
     "svelte-check": "4.7.6",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "unocss": "66.9.2",
     "vite": "8.0.0",
-    "vitest": "3.2.4",
-    "@webext-core/fake-browser": "1.5.2",
+    "vitest": "5.0.0",
+    "@webext-core/fake-browser": "2.0.1",
     "wxt": "0.21.4"
   },
   "dependencies": {
-    "@webext-core/messaging": "2.3.0",
+    "@webext-core/messaging": "4.0.0",
     "@wxt-dev/storage": "1.2.9"
   }
 }
