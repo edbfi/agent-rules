@@ -33,7 +33,7 @@ jobs:
           TARGET: ${{ inputs.target }}
           SOURCE_SHA: ${{ inputs.source-sha }}
         run: python3 .github/scripts/delivery.py preview --target "$TARGET" --source-sha "$SOURCE_SHA" --output "$RUNNER_TEMP/rules-plan"
-      - uses: actions/upload-artifact@v7.0.0
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: rules-plan
           path: ${{ runner.temp }}/rules-plan/
