@@ -34,16 +34,16 @@ Target the latest mutually compatible stable line of each tool. The one constrai
     "postinstall": "wxt prepare"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.12",
-    "@sveltejs/vite-plugin-svelte": "7.2.0",
+    "@biomejs/biome": "2.5.13",
+    "@sveltejs/vite-plugin-svelte": "7.3.0",
     "@wxt-dev/module-svelte": "2.0.5",
     "@wxt-dev/unocss": "1.0.1",
-    "@unocss/preset-wind4": "66.9.2",
+    "@unocss/preset-wind4": "66.10.1",
     "svelte": "5.57.0",
     "svelte-check": "4.7.6",
     "typescript": "7.0.2",
-    "unocss": "66.9.2",
-    "vite": "8.0.0",
+    "unocss": "66.10.1",
+    "vite": "8.3.0",
     "vitest": "5.0.0",
     "@webext-core/fake-browser": "2.0.1",
     "wxt": "0.21.4"
