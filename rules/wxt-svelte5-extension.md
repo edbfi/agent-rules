@@ -44,7 +44,7 @@ Target the latest mutually compatible stable line of each tool. The one constrai
     "typescript": "7.0.2",
     "unocss": "66.10.3",
     "vite": "8.3.0",
-    "vitest": "5.0.0",
+    "vitest": "5.0.1",
     "@webext-core/fake-browser": "2.0.1",
     "wxt": "0.21.4"
   },
