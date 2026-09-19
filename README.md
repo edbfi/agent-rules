@@ -49,7 +49,7 @@ entry. The replacement and removal travel in one PR. Nothing else is pruned.
 
 Read-only validation/preview uses the automatic GitHub job token. Only the writer
 uses `RULES_SYNC_TOKEN`: a fresh fine-grained token named `edbfi-agent-rules-sync`,
-owned by edbfi, scoped to the nine manifest targets with Contents and Pull requests
+owned by edbfi, scoped to the manifest targets with Contents and Pull requests
 read/write (Metadata read is implicit). No Workflows, Administration or Packages
 permission is needed. The user selects no expiry and generates/captures the value.
 Never commit or log it. Old tokens are not reused or revoked by this migration.
