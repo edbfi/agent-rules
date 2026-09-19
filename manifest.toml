@@ -38,6 +38,11 @@ publish = true
 rules = ["go-1_27-core"]
 
 [[repo]]
+slug = "edbfi/wtfnzb-adapter"
+publish = true
+rules = ["python-3_14-litestar-api"]
+
+[[repo]]
 slug = "edbfi/zimuarr"
 publish = true
 rules = ["svelte5-sveltekit-app", "python-3_14-litestar-api"]
