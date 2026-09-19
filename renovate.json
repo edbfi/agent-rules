@@ -24,6 +24,19 @@
         "custom.regex"
       ],
       "groupName": "rule-file pins"
+    },
+    {
+      "description": "Preserve the compiler API required by the WXT/Svelte example. Native checking uses a separate alias until a reviewed coordinated migration supports root TypeScript 7.",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchFileNames": [
+        "rules/wxt-svelte5-extension.md"
+      ],
+      "matchPackageNames": [
+        "typescript"
+      ],
+      "allowedVersions": "<7"
     }
   ],
   "automerge": true,
