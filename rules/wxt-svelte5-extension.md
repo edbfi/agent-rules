@@ -10,7 +10,7 @@ Optimize for: entrypoint code that runs in the right context (service workers ha
 
 ## Toolchain, versions, and the one compatibility knot
 
-Target the latest mutually compatible stable line of each tool. The one constraint worth stating up front: **Svelte's language tools (svelte-check, svelte2tsx) cannot yet consume TypeScript 7.0's Go-based programmatic API**, so pin TypeScript to the 6.0 line for `.svelte` type checking even though TS 7.0 is stable. You can still run `tsgo` as a fast non-blocking checker for plain `.ts`, but the source of truth for Svelte remains TypeScript 6.0.
+Target the latest mutually compatible stable line of each tool. The one constraint worth stating up front: **Svelte's language tools (svelte-check, svelte2tsx) cannot yet consume TypeScript 7.0's Go-based programmatic API**, so pin TypeScript to the 6.0 line for `.svelte` type checking even though TS 7.0 is stable. For native checking, retain this API dependency and add the `@typescript/native@npm:typescript@7.0.2` alias, then run `svelte-check --tsgo --tsconfig ./tsconfig.json` alongside the original checker. Validate this path with the project's complete extension/browser security tests and production builds before adoption. See the [Svelte checker documentation](https://github.com/sveltejs/language-tools/blob/master/packages/svelte-check/README.md).
 
 `@sveltejs/vite-plugin-svelte` 7.x requires Vite 8; WXT 0.21 requires Vite ≥ 6.3.4, so Vite 8 satisfies both. WXT 0.21 declares `vite` as a required peer dependency (and `web-ext`/`typescript` as optional peers) rather than bundling them — this cut a fresh install from roughly 98 MB/366 packages to 22 MB/156 packages — so you must add `vite` to your own `devDependencies` and control the exact version.
 
@@ -41,7 +41,7 @@ Target the latest mutually compatible stable line of each tool. The one constrai
     "@unocss/preset-wind4": "66.10.4",
     "svelte": "5.57.0",
     "svelte-check": "4.7.6",
-    "typescript": "7.0.2",
+    "typescript": "6.0.3",
     "unocss": "66.10.4",
     "vite": "8.3.0",
     "vitest": "5.0.1",
@@ -567,7 +567,7 @@ describe('pinnedTabs', () => {
 | Svelte | 5.57.x | Runes mode only; `mount`/`unmount` from `svelte` |
 | `@sveltejs/vite-plugin-svelte` | 7.2.x | Requires Vite 8 |
 | Vite | 8.x | Satisfies both WXT (≥ 6.3.4) and vite-plugin-svelte 7 |
-| TypeScript | 6.0.x | Pinned for Svelte tooling; TS 7.0 not yet usable by svelte-check (no stable programmatic API until 7.1) |
+| TypeScript | 6.0.x | Retain the compiler API; native 7.x checking requires a separate alias and explicit `--tsgo` |
 | svelte-check | 4.7.x | Type checker + Svelte diagnostics for `.svelte`/`.svelte.ts` |
 | UnoCSS + `@unocss/preset-wind4` | 66.9.x | Wind4 preset; built-in reset |
 | `@wxt-dev/unocss` | 1.0.x | Shadow-root injection for content scripts has an open unresolved issue — verify per project |
