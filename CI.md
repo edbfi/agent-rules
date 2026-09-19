@@ -30,7 +30,7 @@ disabled until the newly generated token and a real reviewed pilot are ready.
 Schedules and automatic fan-out are not enabled. Initial unchanged consumers must
 report no-op; never manufacture changes solely to test permissions.
 
-Shared actions, workflows and presets use immutable `v3.0.0` references.
+Shared actions, workflows and presets use immutable `v3.0.1` references.
 Renovate is the sole ongoing dependency merge owner. Direct automerge remains
 explicitly disabled, including matching package rules, until the hosted rollout
 proves native Renovate operation behind complete required CI. The legacy Actions
