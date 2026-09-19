@@ -24,15 +24,11 @@
         "custom.regex"
       ],
       "groupName": "rule-file pins"
-    },
-    {
-      "matchPackageNames": [
-        "*"
-      ],
-      "automerge": false
     }
   ],
-  "automerge": false,
+  "automerge": true,
   "platformAutomerge": false,
-  "ignoreTests": false
+  "ignoreTests": false,
+  "automergeStrategy": "rebase",
+  "automergeType": "pr"
 }
