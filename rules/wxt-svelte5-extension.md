@@ -39,7 +39,7 @@ Target the latest mutually compatible stable line of each tool. The one constrai
     "@wxt-dev/module-svelte": "2.0.5",
     "@wxt-dev/unocss": "1.0.1",
     "@unocss/preset-wind4": "66.10.5",
-    "svelte": "5.57.0",
+    "svelte": "5.57.1",
     "svelte-check": "4.7.6",
     "typescript": "6.0.3",
     "unocss": "66.10.5",
