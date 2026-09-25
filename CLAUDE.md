@@ -66,4 +66,4 @@ Every rule listed by any target needs at least one accepted hash, or `manifest()
 
 - Commits and PR titles use Conventional Commits with a `Signed-off-by` trailer (`git commit -s`). The PR policy workflow enforces both.
 - The delivery runbook (preview, then review `plan.json`/`changes.diff`, then sync with the plan SHA256) is in `README.md` under "Delivery". Read it before touching `preview.yml`, `sync.yml` or the plan format.
-- CI job names and the Renovate merge policy are described in `CI.md`. Read it before renaming jobs in `ci.yml`, because shared guards and required checks depend on those names.
+- CI job names and the Renovate merge policy are described in `CI.md`. Read it before renaming jobs in `ci.yml`, because the shared gate and required checks depend on those names.
