@@ -1,4 +1,4 @@
-# Explicit CI delivery opt-ins. No local manifests are read.
+# Explicit rule-delivery opt-ins (rules are copied manually). No local manifests are read.
 [defaults]
 publish = false
 
