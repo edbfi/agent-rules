@@ -35,7 +35,7 @@ Target the latest mutually compatible stable line of each tool. The one constrai
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
-    "@sveltejs/vite-plugin-svelte": "7.3.0",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@wxt-dev/module-svelte": "2.0.5",
     "@wxt-dev/unocss": "1.0.1",
     "@unocss/preset-wind4": "66.10.5",
