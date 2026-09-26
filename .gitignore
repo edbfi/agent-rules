@@ -21,7 +21,3 @@ report-*.txt
 
 # Local-only manifest for non-publishing accounts — never commit
 manifest.local.toml
-
-# Python fixture bytecode
-__pycache__/
-*.py[cod]
