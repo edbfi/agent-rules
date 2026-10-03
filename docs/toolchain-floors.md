@@ -19,3 +19,32 @@ specific consumer's actual supported versions and consult official documentation
 for new package or language claims. Syntax/content CI and byte equality do not
 prove such claims. Preserve the canonical rules during delivery migration and
 review substantive rule improvements separately.
+
+## SvelteKit 3 inspection
+
+Dated inspection: 2026-10-02 (consumer manifests re-read on 2026-10-03 at the
+SvelteKit 3 migration bases). `svelte5-sveltekit-app` now targets SvelteKit 3
+with `@sveltejs/adapter-bun`; its floors, from the npm registry and the
+SvelteKit 3 migration guide:
+
+- Node 22.17 or newer (`@sveltejs/kit` 3.0.0 engines; the `sv` codemod wants
+  22.18). Vitest and Playwright use whatever Node is on `PATH`.
+- Bun 1.4.0 or newer (`@sveltejs/adapter-bun` 1.0.0 engines). The production
+  build and server run on Bun.
+- TypeScript `^6.0.0` is an optional Kit peer. Consumers stay on TypeScript 6
+  or newer.
+- Svelte 5.57.1 or newer, Vite `^8.0.12` and `@sveltejs/vite-plugin-svelte`
+  `^7.0.0` (Kit peers).
+- `@sveltejs/kit` 3.0.x and `@sveltejs/adapter-bun` 1.0.x. `sveltekit-superforms`
+  3 is a prerelease (`3.0.0-next.N`, pinned exactly) until a stable 3.x exists.
+
+Consumers inspected (root package manifests): Obzorarr, Otpravkarr, Poyo
+Studio and Setun pin `packageManager` Bun1.4.2 (Poyo Studio also declares
+`engines.bun` 1.4.2). Zondarr pins Bun1.4.2 at the root and in `frontend/`.
+Setun is a new consumer of `svelte5-sveltekit-app` and `python-3_14-core`.
+
+These floors take effect in each app's own SvelteKit 3 change. Delivering the
+rule does not raise a consumer's floors or recreate its lockfile; each app's
+change does that itself. Comradarr and Zimuarr remain planning-stage consumers
+with no root package manifest: do not invent an application, runtime data or
+dependency pins to deliver the rule.
