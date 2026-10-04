@@ -27,8 +27,8 @@ SvelteKit 3 migration bases). `svelte5-sveltekit-app` now targets SvelteKit 3
 with `@sveltejs/adapter-bun`; its floors, from the npm registry and the
 SvelteKit 3 migration guide:
 
-- Node 22.17 or newer (`@sveltejs/kit` 3.0.0 engines; the `sv` codemod wants
-  22.18). Vitest and Playwright use whatever Node is on `PATH`.
+- Node 22.17 or newer (`@sveltejs/kit` 3.0.0 engines and the `sv` codemod).
+  Vitest and Playwright use whatever Node is on `PATH`.
 - Bun 1.4.0 or newer (`@sveltejs/adapter-bun` 1.0.0 engines). The production
   build and server run on Bun.
 - TypeScript `^6.0.0` is an optional Kit peer. Consumers stay on TypeScript 6
