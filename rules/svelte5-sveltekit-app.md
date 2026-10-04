@@ -538,6 +538,8 @@ Commands: `biome check --write .` (format + lint + organize imports + safe fixes
 
 Use the official **`@sveltejs/adapter-bun`** (Bun ≥1.4.0). Not `@sveltejs/adapter-node` under Bun, and not the community `svelte-adapter-bun` (peers Kit 2 and `typescript ^5`) or its forks.
 
+**Single-page apps** are the exception: an SPA (no `+page.server`, `+layout.server` or `+server` files) uses `@sveltejs/adapter-static` with a `fallback` page (such as `200.html`, not `index.html`) and `ssr = false` in the root `+layout.ts`, served by its backend on the same origin as its API. Its public variables are fixed at build (adapter-static writes them into `_app/env.js`). The adapter-bun, front, and server-side cookie and origin sections then do not apply: the backend owns origin checks, cookies and proxy trust.
+
 ```bash
 bun run build   # bun --bun vite build -> ./build
 bun ./build     # Bun.serve server, or the app's front
@@ -594,6 +596,7 @@ Optional: `tracing.server` with `src/instrumentation.server.ts` (adapter-bun's d
 | Bun | 1.4.x | ≥1.4.0 (adapter-bun); package manager, production build (`--bun`) and runtime; text `bun.lock` default since 1.2, `lockfileVersion` 2 on the 1.4 line |
 | SvelteKit (`@sveltejs/kit`) | 3.0.x | Config only in `sveltekit({...})` in `vite.config.ts`; migrate with `bunx sv migrate sveltekit-3` (`sv` 1.1.x) |
 | `@sveltejs/adapter-bun` | 1.0.x | Official; no TypeScript peer; set `precompress` explicitly |
+| `@sveltejs/adapter-static` | 4.0.x | SPAs only; peers Kit `^3.0.0-next.0` |
 | Svelte | 5.57.x | ≥5.57.1 (Kit 3 peer); runes stable since the Svelte 5 release (Oct 2024) |
 | TypeScript | 6.0.x | Never below 6; Kit 3's `^6.0.0` peer is optional. `verbatimModuleSyntax` required (set by `$app/tsconfig`). TS 7 native compiler excluded — Svelte language tools not yet ready |
 | Vite | 8.x | ≥8.0.12 (Kit 3 peer) |
