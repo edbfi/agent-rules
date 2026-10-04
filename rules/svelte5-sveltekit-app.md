@@ -216,14 +216,15 @@ import { defineEnvVars } from '@sveltejs/kit/env';
 import * as v from 'valibot';
 
 export const variables = defineEnvVars({
-  DATABASE_URL: { schema: building ? v.optional(v.string()) : v.string() }, // absent at image build
-  LOG_LEVEL: {}, // optional: unset stays undefined
-  SITE_NAME: { public: true } // $app/env/public and %sveltekit.env.SITE_NAME%
+  DATABASE_URL: { schema: building ? v.optional(v.string()) : v.string() }, // required at startup, absent at image build
+  LOG_LEVEL: { schema: v.optional(v.string()) }, // optional: unset stays undefined
+  SITE_NAME: { public: true } // no validator: required (may be empty); $app/env/public and %sveltekit.env.SITE_NAME%
 });
 ```
 
 - Server code reads `$app/env/private` (`import * as env from '$app/env/private'` where code passes the env object around). `$env/*` is deprecated and untyped; `$env/dynamic/private` is a shim that exposes declared variables only.
-- **An undeclared variable silently reads as `undefined`** (an undeclared optional one silently switches its feature off). Add a test that compares the declared names with the names the code reads. Keep "unset" as `undefined`; no `?? ''` fallbacks that change semantics.
+- **An undeclared variable silently reads as `undefined`** (an undeclared optional one silently switches its feature off). Add a test that compares the declared names with the names the code reads.
+- **A declared variable without a `schema` is required:** unset fails startup or the build ("Value is missing"); an empty string passes. Give every optional variable a validator that accepts `undefined`, such as `v.optional(v.string())` or a function (`(value) => value`; returning `undefined` is valid), never `{}`. Keep "unset" as `undefined`; no `?? ''` fallbacks that change semantics.
 - Variables are dynamic unless `static: true` (inlined at build). Public ones need `public: true`, including every `%sveltekit.env.NAME%` in `app.html`. An invalid value fails startup or the build. `browser`, `building`, `dev`, `version` come from `$app/env`.
 
 ## Routing and the data layer
