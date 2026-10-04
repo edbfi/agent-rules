@@ -33,6 +33,11 @@ publish = true
 rules = ["svelte5-sveltekit-app"]
 
 [[repo]]
+slug = "edbfi/setun"
+publish = true
+rules = ["svelte5-sveltekit-app", "python-3_14-core"]
+
+[[repo]]
 slug = "edbfi/wings-vpn"
 publish = true
 rules = ["go-1_27-core"]
