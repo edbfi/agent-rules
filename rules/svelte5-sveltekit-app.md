@@ -338,7 +338,7 @@ It must never throw. An async client `handleError` needs `compilerOptions.experi
 
 ## Forms: Superforms 3
 
-Formsnap is no longer used (`formsnap@2.0.1` peers superforms `^2.19.0`, excluding 3.x; no release since April 2025): build field components in-house. Superforms 2.x peers Kit ≤2. **Superforms 3 is a prerelease (`3.0.0-next.N`) until stable: pin it exactly; nothing ships on it before stable.** Import paths and the store API (`$form`, `$errors`, `$message`) are unchanged; `/server` is server-only.
+Formsnap is no longer used (`formsnap@2.0.1` peers superforms `^2.19.0`, excluding 3.x; no release since April 2025): build field components in-house. Superforms 2.x peers Kit ≤2; use 3.0.x (stable). Import paths and the store API (`$form`, `$errors`, `$message`) are unchanged; `/server` is server-only.
 
 - Every `load`/action path that **returns** includes the form (`{ form }`, or `{ loginForm, registerForm }` for several). Thrown `redirect()`/`error()` stay. Invalid input returns `fail(400, { form })`, never `error()`.
 - Schemas and adapters (`valibot(schema)`) live at module top level (adapter cache). One `superForm(untrack(() => data.form))` per form; inputs have `name` unless `dataType: 'json'` (needs JS; disabled fields are still posted).
@@ -601,7 +601,7 @@ Optional: `tracing.server` with `src/instrumentation.server.ts` (adapter-bun's d
 | TypeScript | 6.0.x | Never below 6; Kit 3's `^6.0.0` peer is optional. `verbatimModuleSyntax` required (set by `$app/tsconfig`). TS 7 native compiler excluded — Svelte language tools not yet ready |
 | Vite | 8.x | ≥8.0.12 (Kit 3 peer) |
 | `@sveltejs/vite-plugin-svelte` | 7.x | `^7.0.0` (Kit 3 peer); requires Vite 8 |
-| `sveltekit-superforms` | 3.0.0-next.N | Prerelease until stable: exact pin, nothing ships on it before stable; 2.x is Kit ≤2 only; no Formsnap |
+| `sveltekit-superforms` | 3.0.x | Peers Kit 2.12+ and 3; 2.x is Kit ≤2 only; no Formsnap |
 | UnoCSS (`unocss`, `@unocss/vite`, `@unocss/preset-wind3`) | 66.x | Global mode; `extractorSvelte` for `class:` directives |
 | `unocss-preset-shadcn` | 1.0.1 | Use `unocss-preset-shadcn/v3` (presetWind3); package default is presetWind4 (oklch/transformer issues) |
 | `unocss-preset-animations` | current | Replaces `tailwindcss-animate` |
@@ -612,4 +612,4 @@ Optional: `tracing.server` with `src/instrumentation.server.ts` (adapter-bun's d
 | svelte-check | 4.5.x | Type-checker for `.svelte` |
 | Node (toolchain floor) | 22.17+ | Kit 3 engines and the `sv` codemod; runs dev, Vitest and Playwright (the Node on `PATH`); production builds and serves on Bun |
 
-- **Research date:** October 3, 2026
+- **Research date:** October 4, 2026
