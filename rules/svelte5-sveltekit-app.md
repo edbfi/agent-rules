@@ -14,7 +14,7 @@ Bun is the package manager, the **production build** runtime and the **productio
 
 - `bun install` writes `bun.lock` — a text-based JSONC lockfile that has been the default since Bun 1.2, with `lockfileVersion` 2 on the 1.4 line. Commit it. Older Bun versions cannot read v2 lockfiles.
 - `bun run dev` executes the `dev` script; Vite's dev server still uses Node unless you pass `--bun` (`bun --bun run dev`).
-- `bunx <pkg>` runs a package binary (equivalent to `npx`); `bun run <script>` runs a `package.json` script. Use `bunx shadcn-svelte@latest add …` for the component CLI.
+- `bunx <pkg>` runs a package binary (under Node if its shebang names `node`; `bunx --bun` forces Bun); `bun run <script>` runs a `package.json` script. Use `bunx shadcn-svelte@latest add …` for the component CLI. Never use npm, npx, yarn or pnpm commands.
 - In production you run the adapter output under Bun: `bun ./build`, or the app's own front (see Deployment).
 
 `package.json` scripts (the coherent command set):
@@ -86,7 +86,7 @@ A service worker is its own TS project (`src/service-worker/tsconfig.json` exten
 
 ## Migrating from SvelteKit 2
 
-Codemod (Node ≥22.18): `npx sv migrate sveltekit-3`, one task at a time (`--tasks <id>`, commit after each, `--install bun` or `--no-install`). It runs your `format` script (expect reformatted files). Resolve every `@migration-task` marker; never commit `MIGRATION_TASKS.md`. `package-json` and `tsconfig` are implicit tasks. Known quirks: it can narrow tsconfig `include` to `src` (restore it) and write floors below Kit's peers (raise them); test mocks keyed on module specifiers must follow every rename; `external-redirects` only catches static redirects (see Redirects).
+Codemod (runs under Node ≥22.17): `bunx sv migrate sveltekit-3`, one task at a time (`--tasks <id>`, commit after each, `--install bun` or `--no-install`). It runs your `format` script (expect reformatted files). Resolve every `@migration-task` marker; never commit `MIGRATION_TASKS.md`. `package-json` and `tsconfig` are implicit tasks. Known quirks: it can narrow tsconfig `include` to `src` (restore it) and write floors below Kit's peers (raise them); test mocks keyed on module specifiers must follow every rename; `external-redirects` only catches static redirects (see Redirects).
 
 - **`$app/stores` is removed** (throws at runtime, no types): use `$app/state`, which already works on Kit 2. `$app/environment` is a deprecated untyped alias: use `$app/env`. `$service-worker` is removed (see above).
 - `$app/paths` keeps only `asset`, `match` and `resolve` (`base`, `assets`, `resolveRoute` are gone); paths lose the leading `/` (`asset('foo.png')`, `resolve('blog/hello')`); `Pathname`/`Asset` are now `Path`/`AssetPath`; `preloadCode` takes a route ID. `src/params/*` becomes one `src/params.ts` built with `defineParams` from `@sveltejs/kit/params`.
@@ -589,7 +589,7 @@ Optional: `tracing.server` with `src/instrumentation.server.ts` (adapter-bun's d
 | Component | Targeted line | Notes / floor |
 | --- | --- | --- |
 | Bun | 1.4.x | ≥1.4.0 (adapter-bun); package manager, production build (`--bun`) and runtime; text `bun.lock` default since 1.2, `lockfileVersion` 2 on the 1.4 line |
-| SvelteKit (`@sveltejs/kit`) | 3.0.x | Config only in `sveltekit({...})` in `vite.config.ts`; migrate with `sv migrate sveltekit-3` (`sv` 1.0.x) |
+| SvelteKit (`@sveltejs/kit`) | 3.0.x | Config only in `sveltekit({...})` in `vite.config.ts`; migrate with `bunx sv migrate sveltekit-3` (`sv` 1.1.x) |
 | `@sveltejs/adapter-bun` | 1.0.x | Official; no TypeScript peer; set `precompress` explicitly |
 | Svelte | 5.57.x | ≥5.57.1 (Kit 3 peer); runes stable since the Svelte 5 release (Oct 2024) |
 | TypeScript | 6.0.x | Never below 6; Kit 3's `^6.0.0` peer is optional. `verbatimModuleSyntax` required (set by `$app/tsconfig`). TS 7 native compiler excluded — Svelte language tools not yet ready |
@@ -604,6 +604,6 @@ Optional: `tracing.server` with `src/instrumentation.server.ts` (adapter-bun's d
 | Vitest | 4.x | Browser Mode via Playwright; separate component and server projects |
 | `vitest-browser-svelte` | 3.x | Requires Vitest 4+ |
 | svelte-check | 4.5.x | Type-checker for `.svelte` |
-| Node (toolchain floor) | 22.17+ | Kit 3 engines (`sv` wants 22.18+); runs dev, Vitest and Playwright (the Node on `PATH`); production builds and serves on Bun |
+| Node (toolchain floor) | 22.17+ | Kit 3 engines and the `sv` codemod; runs dev, Vitest and Playwright (the Node on `PATH`); production builds and serves on Bun |
 
 - **Research date:** October 3, 2026
