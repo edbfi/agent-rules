@@ -16,7 +16,9 @@ SLUG = re.compile(r"edbfi/[A-Za-z0-9_.-]+")
 SHA256 = re.compile(r"[0-9a-f]{64}")
 FRONTMATTER_LINE = re.compile(r'([a-z_]+): "([^"\\]+)"')
 RULE_TYPES = {"agent_requested"}
-FENCE = re.compile(r"(```|~~~)")
+# CommonMark fences: up to 3 spaces, then 3+ backticks or tildes; a backtick fence's info string
+# has no backtick. A fence closes on the same character, at least as long, with nothing after it.
+FENCE = re.compile(r" {0,3}(`{3,}|~{3,})(.*)")
 
 errors = []
 
@@ -62,10 +64,13 @@ def check_rule(path):
     fence, titles = None, 0
     for line in body:
         marker = FENCE.match(line)
-        if marker and (fence is None or marker[1] == fence):
-            fence = marker[1] if fence is None else None
-        elif fence is None and line.startswith("# "):
-            titles += 1
+        if fence is None:
+            if marker and not (marker[1][0] == "`" and "`" in marker[2]):
+                fence = marker[1]
+            elif line.startswith("# "):
+                titles += 1
+        elif marker and marker[1][0] == fence[0] and len(marker[1]) >= len(fence) and not marker[2].strip():
+            fence = None
     if fence is not None:
         fail(where, "unclosed code fence")
     if titles != 1:
