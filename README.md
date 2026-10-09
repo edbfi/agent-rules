@@ -24,7 +24,11 @@ entry. The replacement and removal travel in one PR. Nothing else is pruned.
 
 ## Development
 
-There are no scripts or tests; rule changes are reviewed and copied manually.
+Rule changes are reviewed and copied manually. CI runs the checks in
+`.pre-commit-config.yaml` with `prek run --all-files --hook-stage manual`,
+including `scripts/check-rules.py`, which checks each rule's frontmatter, title
+and filename and the shape of `manifest.toml` (`python3 scripts/check-rules.py`
+runs it alone). The whitespace fixers skip `rules/`, so rule bytes never change.
 See the [toolchain notes](docs/toolchain-floors.md).
 The old local synchronizer and the retired CI delivery scripts remain recoverable
 in repository history.
