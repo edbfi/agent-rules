@@ -36,7 +36,7 @@ def check_rule(path):
         text = data.decode("utf-8")
     except UnicodeDecodeError:
         return fail(where, "must be UTF-8")
-    if text.startswith("﻿") or "\r" in text or not text.endswith("\n"):
+    if text.startswith("\ufeff") or "\r" in text or not text.endswith("\n"):
         return fail(where, "must be UTF-8 without BOM, LF line endings, ending in a newline")
     lines = text.split("\n")
     if lines[0] != "---" or "---" not in lines[1:]:
@@ -105,7 +105,9 @@ def check_manifest(rules):
             fail(at, "rules must be a non-empty list without duplicates")
             listed = []
         for rule in listed:
-            if rule not in rules:
+            if not isinstance(rule, str):
+                fail(at, f"rule names must be strings, not {rule!r}")
+            elif rule not in rules:
                 fail(at, f"unknown rule {rule!r} (no rules/{rule}.md)")
         remove = entry.get("remove", {})
         if not isinstance(remove, dict):
