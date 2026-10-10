@@ -36,7 +36,8 @@ SvelteKit 3 migration guide:
 - Svelte 5.57.1 or newer, Vite `^8.0.12` and `@sveltejs/vite-plugin-svelte`
   `^7.0.0` (Kit peers).
 - `@sveltejs/kit` 3.0.x and `@sveltejs/adapter-bun` 1.0.x. `sveltekit-superforms`
-  3 is a prerelease (`3.0.0-next.N`, pinned exactly) until a stable 3.x exists.
+  3.0.x: 3.0.0 is stable (npm `latest` since 2026-10-04), and Obzorarr and Setun
+  pin it exactly (rechecked 2026-10-10).
 
 Consumers inspected (root package manifests): Obzorarr, Otpravkarr, Poyo
 Studio and Setun pin `packageManager` Bun1.4.2 (Poyo Studio also declares
