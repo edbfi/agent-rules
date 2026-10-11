@@ -396,7 +396,7 @@ export default defineConfig({
 
 Do **not** set `darkSelector: '[data-kb-theme="dark"]'` — that is the SolidUI/Kobalte default. shadcn-svelte uses the `.dark` class strategy, which is `presetShadcn`'s default. For a runtime color-swap UI, pass an array of themes (`presetShadcn(builtinColors.map((c) => ({ color: c })))`) and toggle the generated `theme-<color>` class on `document.body`; the preset ships no `updateTheme` helper.
 
-Root layout wires the reset, generated utilities, and dark-mode manager. `mode-watcher` is still required — it sets the `.dark` class on `<html>` before paint, avoiding the light→dark flash that `onMount`-based toggles cause:
+Root layout wires the generated utilities (which include the reset) and the dark-mode manager. `mode-watcher` is still required — it sets the `.dark` class on `<html>` before paint, avoiding the light→dark flash that `onMount`-based toggles cause:
 
 ```svelte
 <!-- src/routes/+layout.svelte -->
@@ -608,7 +608,7 @@ Optional: `tracing.server` with `src/instrumentation.server.ts` (adapter-bun's d
 | Vite | 8.x | ≥8.0.12 (Kit 3 peer) |
 | `@sveltejs/vite-plugin-svelte` | 7.x | `^7.0.0` (Kit 3 peer); requires Vite 8 |
 | `sveltekit-superforms` | 3.0.x | Peers Kit 2.12+ and 3; 2.x is Kit ≤2 only; no Formsnap |
-| UnoCSS (`unocss`, `@unocss/vite`, `@unocss/preset-wind4`) | 66.x | Global mode; `extractorSvelte` for `class:` directives |
+| UnoCSS (`unocss`, which bundles `@unocss/vite` and `presetWind4`) | 66.x | Global mode; `extractorSvelte` for `class:` directives |
 | `unocss-preset-shadcn` | 1.0.1 | Root entry (presetWind4); colours as bare oklch components despite the HSL types |
 | `unocss-preset-animations` | current | Replaces `tailwindcss-animate` |
 | shadcn-svelte (CLI) | latest | Runes-native; on bits-ui; no `init` with UnoCSS |
