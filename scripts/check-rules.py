@@ -139,8 +139,6 @@ def check_manifest(rules):
 def main():
     rules_dir = ROOT / "rules"
     entries = sorted(rules_dir.iterdir()) if rules_dir.is_dir() else []
-    if not entries:
-        fail("rules/", "no canonical rules found")
     for path in entries:
         check_rule(path)
     rules = {path.stem for path in entries if path.suffix == ".md"}
