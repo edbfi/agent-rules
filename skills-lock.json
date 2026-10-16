@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "coding-guidelines-builder": {
+      "source": "edbfi/skills",
+      "sourceType": "github",
+      "skillPath": "coding-guidelines/coding-guidelines-builder/SKILL.md",
+      "computedHash": "bdfd99ac692a4fdd1703ad74e4d9aacb1fd434f595f2a0c2a08bb1c0c8cbe66d"
+    }
+  }
+}

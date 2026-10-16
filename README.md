@@ -1,37 +1,27 @@
 # agent-rules
 
-Twelve canonical, flat Markdown rule files for explicitly opted-in edbfi projects.
-Source files are the artifact; no application build or local hydration is needed.
+The previous canonical Markdown rules and connected repository list have been
+cleared. `manifest.toml` has no targets or accepted rule hashes, and publishing
+remains disabled.
 
-## Delivery
+## Local skill
 
-Workflow-based delivery is disabled. Review and copy canonical rule changes manually into explicitly opted-in repositories. Preserve consumer-specific rules and local hooks.
+The `coding-guidelines-builder` skill is installed in
+`.agents/skills/coding-guidelines-builder/` from
+[edbfi/skills](https://github.com/edbfi/skills/blob/main/coding-guidelines/coding-guidelines-builder/SKILL.md).
+Its source is recorded in `skills-lock.json`.
 
-## Manifest and conflict handling
+Install or refresh it locally with:
 
-`publish` defaults to false. Every public target is an explicit opt-in in
-`manifest.toml`; other owners and excluded projects are never targets. Canonical rule
-changes do not add consumers automatically. Keep the manifest public-only.
-
-`accepted` records the SHA256 of reviewed previous rule bytes. Existing consumers
-must match either the desired bytes or an accepted previous version. Add a prior
-canonical hash deliberately when updating a rule; never bless a custom consumer
-edit merely to make it pass. Files absent in a consumer may be added.
-
-Unrelated/custom rule files are preserved. To rename a managed rule, include an
-explicit `[repo.remove]` old filename and its reviewed SHA256 in that target's
-entry. The replacement and removal travel in one PR. Nothing else is pruned.
+```sh
+bunx skills add https://github.com/edbfi/skills/blob/main/coding-guidelines/coding-guidelines-builder/SKILL.md --skill coding-guidelines-builder --agent codex --yes
+```
 
 ## Development
 
-Rule changes are reviewed and copied manually. CI runs the checks in
-`.pre-commit-config.yaml` with `prek run --all-files --hook-stage manual`,
-including `scripts/check-rules.py`, which checks each rule's frontmatter, title
-and filename and the shape of `manifest.toml` (`python3 scripts/check-rules.py`
-runs it alone). The whitespace fixers skip `rules/`, so rule bytes never change.
-See the [toolchain notes](docs/toolchain-floors.md).
-The old local synchronizer and the retired CI delivery scripts remain recoverable
-in repository history.
+Run `prek run --all-files --hook-stage manual` for the same checks as CI.
+Run `python3 scripts/check-rules.py` to validate rule and manifest shape alone;
+an empty rule collection is supported.
 
 ## License
 
