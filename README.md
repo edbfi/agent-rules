@@ -17,10 +17,12 @@ Install or refresh it locally with:
 bunx skills add https://github.com/edbfi/skills/blob/main/coding-guidelines/coding-guidelines-builder/SKILL.md --skill coding-guidelines-builder --agent codex --yes
 ```
 
-The generated [Bun/SvelteKit/Panda/Drizzle guidelines](.agents/skills/bun-sveltekit-panda-drizzle-guidelines/SKILL.md)
-cover the selected stack and include reusable dependency, lint, formatting and
-verification tools. Their [validation report](docs/validation/bun-sveltekit-panda-drizzle-guidelines.md)
-records the evaluated release pins, measured results and limitations.
+The [Bun/SvelteKit/Panda/Drizzle guide](.agents/skills/bun-sveltekit-panda-drizzle-guidelines/SKILL.md)
+covers Svelte reactivity and components, Kit server boundaries and forms,
+Panda/Ark UI composition, database schemas and transactions, and typed API
+clients. It includes concrete source examples and reusable project checks.
+Its [validation report](docs/validation/bun-sveltekit-panda-drizzle-guidelines.md)
+separates current source/example checks from the initial tooling-only benchmark.
 
 ## Development
 

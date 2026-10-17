@@ -1,0 +1,46 @@
+{
+  "name": "stack-guidelines-examples",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  },
+  "dependencies": {
+    "typescript": "6.0.3",
+    "svelte": "5.57.2",
+    "@sveltejs/kit": "3.1.0",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "vite": "8.3.4",
+    "@sveltejs/adapter-bun": "1.0.0",
+    "@pandacss/dev": "2.2.0",
+    "@pandacss/vite": "2.2.0",
+    "@pandacss/preset-base": "2.2.0",
+    "@pandacss/preset-panda": "2.2.0",
+    "@ark-ui/svelte": "5.24.3",
+    "drizzle-orm": "1.0.0-rc.5-5935859",
+    "drizzle-kit": "1.0.0-rc.5-5935859",
+    "@hey-api/openapi-ts": "0.99.0",
+    "svelte-check": "4.7.7",
+    "eslint": "10.13.0",
+    "typescript-eslint": "8.71.2",
+    "eslint-plugin-svelte": "3.23.1",
+    "prettier": "3.9.10",
+    "prettier-plugin-svelte": "4.1.1",
+    "@eslint/js": "10.0.1",
+    "@types/bun": "1.4.3",
+    "playwright": "1.64.1"
+  },
+  "packageManager": "bun@1.4.3",
+  "scripts": {
+    "generate": "svelte-kit sync && panda codegen && openapi-ts",
+    "check": "bun run generate && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "build": "bun run check && vite build",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "test": "bun test",
+    "db:generate": "drizzle-kit generate --config drizzle.sqlite.config.ts && drizzle-kit generate --config drizzle.pg.config.ts",
+    "start": "bun ./build",
+    "test:browser": "bun browser-check.ts"
+  }
+}

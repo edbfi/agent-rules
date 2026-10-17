@@ -1,0 +1,10 @@
+node_modules/
+.svelte-kit/
+build/
+styled-system/
+src/lib/api/
+bun.lock
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+migrations/

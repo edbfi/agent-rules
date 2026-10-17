@@ -1,85 +1,84 @@
 # Provenance
 
-Research snapshot: 2026-10-16. Coding model: gpt-6.1-sol, high; Codex
-CLI/app-server 0.163.0, explicit/on_demand instruction loading. Automatic native
-discovery and description optimization were not measured. The model's knowledge
-cutoff is unknown; no cutoff-specific or contradicted-probe admissions are claimed.
+Research snapshot: 2026-10-16; expanded-guide revision: 2026-10-17. This revision
+contains source-backed idiomatic coding guidance across the requested stack.
+Admission does not require a measured baseline mistake: correct framework,
+runtime, database and API practices belong in the guide even when the coding
+model already knew them. This follows the explicit request for a full researched
+guide and supersedes the earlier mistake-only pruning scope.
 
-This is a compact public export of the nonoperative audit record. The nine
-operative files (SKILL.md, references, assets and check script) are byte-identical
-to the evaluated skill. This provenance file omits private workspace paths,
-transcripts and duplicated release extracts; its tree hash therefore differs
-from the original audit bundle. It is not referenced by loaded skill instructions.
-Detailed evaluation artifacts remain outside this repository. The
-[public validation report](../../../docs/validation/bun-sveltekit-panda-drizzle-guidelines.md)
-records the method, complete planned coverage, results and limits without claiming
-that raw transcripts are bundled here.
+The initial evaluated version retained mostly dependency/lint/format tooling.
+Its 72-run comparison is historical evidence for that minimal version only; it
+does not validate this expanded guide or prove that the removed coding knowledge
+was unnecessary. No new model benchmark is claimed for this expansion. Current
+source/example verification is documented in the
+[validation report](../../../docs/validation/bun-sveltekit-panda-drizzle-guidelines.md).
+
+This public record preserves primary citations, evidence admissions and limits
+without private workspace paths or raw transcripts. The earlier frozen/delivered
+artifact remains unchanged as history; the repository guide now has different
+operative content and must not claim its old fingerprint.
 
 ## Evidence
 
 | file | section | evidence | reference |
 |---|---|---|---|
-| SKILL.md | Decisions | structure | Required fixed-layout section; concrete choices supported by the records below |
-| SKILL.md | Decisions | decision | Requested stack, selected release policy, verified tooling choices and exact assets |
-| SKILL.md | Top mistakes | structure | Required empty heading after measured removal of redundant guidance |
-| SKILL.md | Check | structure | Required fixed-layout section |
-| SKILL.md | Check | decision | Unchanged evaluated check script; tests required only when the task requests them |
-| SKILL.md | Routing | structure | Routes only to retained admitted release/compatibility guidance |
-| references/integration.md | * | decision | Required empty scaffold after individual and joint pruning; no operative integration claims remain |
-| references/anti-patterns.md | * | decision | Required empty lookup-table scaffold after pruning; no anti-pattern rows remain |
-| references/versions.md | * | decision | Requested floors, TypeScript exact pin, stable-compatible selection and Drizzle-only RC exception |
-| references/versions.md | * | compat | Pinned package metadata/peer ranges, Bun runtime SQLite query and full-stack integration checks |
-| assets/package.json | * | decision | Exact selected dependency declarations extracted from the verified example project; merge only needed dependencies |
-| assets/eslint.config.js | * | baseline | m-01: missing local TypeScript/Svelte lint gate/configuration across all eight initial development submissions |
-| assets/eslint.config.js | * | compat | ESLint/TypeScript/Svelte flat config passed the pinned SvelteKit 3 production and lint gates |
-| assets/.prettierrc.json | * | baseline | m-02: missing executable formatting gate in seven initial development submissions; task 4 passed formatting |
-| assets/.prettierrc.json | * | compat | Prettier 3/Svelte-plugin 4 configuration passed the pinned formatting gate |
-| assets/.prettierignore | * | decision | Verified generated-output defaults; consuming projects must adjust generated paths |
-| scripts/check.sh | * | decision | Same generic gate used during evaluation; SHA256 cf6568a0a58403ff42b51422a113ec25568328817b3e967d9acd608680b4e02e |
+| SKILL.md | Decisions | structure | Fixed layout; technical guidance supported by selected primary sources |
+| SKILL.md | Decisions | decision | Explicit request for full source-backed coding guidelines, including idioms already known by the baseline |
+| SKILL.md | Top mistakes | structure | Fixed required section; concrete pitfalls supported by references and source APIs |
+| SKILL.md | Top mistakes | decision | Known incompatible/deprecated patterns and runtime boundaries in the selected releases |
+| SKILL.md | Check | structure | Fixed required section |
+| SKILL.md | Check | decision | Reusable project gate plus the committed example validation described in the public report |
+| SKILL.md | Routing | structure | Routes to substantive component/integration references |
+| references/bun-typescript.md | Runtime and dependency discipline | decision | Bun 1.4.3 lockfile/runtime documentation and selected package metadata |
+| references/bun-typescript.md | Strict TypeScript boundaries | decision | TypeScript 6.0.3 declarations, official narrowing guidance and Kit 3 generated compiler options |
+| references/bun-typescript.md | Resource ownership | decision | Bun SQLite/SQL lifecycle and transaction APIs; checked example resource cleanup |
+| references/svelte.md | Reactive state and derived values | decision | Svelte 5.57.2 compiler/runtime declarations; official runes documentation |
+| references/svelte.md | Component contracts and events | decision | Svelte 5 Snippet/render/callback contracts in shipped type declarations |
+| references/svelte.md | Effects and server rendering | decision | Svelte 5 effect/lifecycle documentation and example compiler/SSR checks |
+| references/sveltekit.md | Kit 3 configuration and imports | decision | Kit 3.1.0 plugin/config resolver and migration documentation |
+| references/sveltekit.md | Route and server boundaries | decision | Kit 3 server modules, environment exports and request-scoped server data APIs |
+| references/sveltekit.md | Loads actions and errors | decision | Official load/form-action documentation and selected Kit 3 action/error signatures |
+| references/panda-ark.md | Panda generation and presets | decision | Panda 2.2.0 config resolver and Vite plugin generation/CSS-layer handling |
+| references/panda-ark.md | Tokens recipes and extraction | decision | Panda 2.2.0 recipe/token/static-extraction APIs and checked example styles |
+| references/panda-ark.md | Ark state and accessibility | decision | Ark Svelte 5.24.3 Dialog/Select declarations and official component documentation |
+| references/drizzle.md | Choose the driver and schema | decision | Drizzle ORM rc5 bun-sqlite/bun-sql drivers, dialect builders and relation signatures |
+| references/drizzle.md | Migrations are deployment artifacts | decision | Drizzle Kit rc5 defineConfig and matching runtime migrator signatures |
+| references/drizzle.md | Transactions constraints and concurrency | decision | Selected Drizzle/Bun transaction APIs and database constraint/concurrency semantics; concrete sample tests |
+| references/hey-api.md | Generate the contract | decision | Hey API 0.99.0 generator/config/plugin declarations |
+| references/hey-api.md | Request scoped clients and envelopes | decision | Selected client-fetch/SDK request options and response envelope signatures |
+| references/hey-api.md | Validation and failures | decision | Separate runtime validator hooks versus generated TypeScript declarations |
+| references/integration.md | Build and generate in dependency order | decision | Verified Kit/Panda/Hey API dependency ordering and pinned example project |
+| references/integration.md | Isolated database verification | decision | Bun bundled SQLite and isolated PostgreSQL 18.6 migration/runtime tests |
+| references/integration.md | Browser and validation gates | decision | Common check script, actual sample execution and explicit browser checks where recorded |
+| references/anti-patterns.md | * | decision | Source-backed wrong/why/right/grep rules for selected APIs and real project boundaries |
+| references/versions.md | * | decision | Requested floors, TypeScript exact pin, dated stable-compatible selection and Drizzle RC exception |
+| references/versions.md | * | compat | Selected release metadata, peer/runtime-engine ranges and observed integration/runtime versions |
+| assets/package.json | * | decision | Selected dependency asset; consuming projects merge only needed entries |
+| assets/eslint.config.js | * | baseline | Historical m-01: missing local lint gate/configuration in 8/8 initial submissions |
+| assets/.prettierrc.json | * | baseline | Historical m-02: missing executable formatter in 7/8; task 4 was the passing exception |
+| assets/.prettierignore | * | decision | Generated-output defaults are adapted to the consuming project |
+| assets/examples | * | decision | Committed source project is the source of truth for instructional code blocks; checks recorded separately |
+| scripts/check.sh | * | decision | Reusable dependency/build/lint/format/test gate; no per-task solution checks |
 
-## Admission and verification records
+## Source-backed guidance basis
 
-The requested stack was Bun 1+, TypeScript exactly 6.0.3, Svelte 5+/Kit 3+, Svelte
-Vite plugin 7+/Vite 8+, official Bun adapter 1+, Panda development/Vite/presets 2+,
-Ark UI for Svelte 5+, Drizzle ORM/Kit 1+ (matched latest RC allowed), Bun-bundled
-SQLite 3+, PostgreSQL 18+ and Hey API 0+. Other packages follow the latest stable
-mutually compatible releases in the dated research snapshot. SQLite was queried
-from the selected Bun runtime rather than selected independently.
+| Topic | Primary API documentation or fixed shipped source |
+|---|---|
+| Bun ownership, lockfiles and SQLite | [Versioned lockfile docs](https://raw.githubusercontent.com/oven-sh/bun/bun-v1.4.3/docs/pm/lockfile.mdx), [SQLite docs](https://raw.githubusercontent.com/oven-sh/bun/bun-v1.4.3/docs/runtime/sqlite.mdx), [SQL docs](https://raw.githubusercontent.com/oven-sh/bun/bun-v1.4.3/docs/runtime/sql.mdx) |
+| TypeScript boundaries | [Official narrowing handbook](https://www.typescriptlang.org/docs/handbook/2/narrowing.html), [selected compiler package](https://registry.npmjs.org/typescript/6.0.3) |
+| Svelte state, components and lifecycle | [Runes](https://svelte.dev/docs/svelte/what-are-runes), [fixed 5.57.2 source/types](https://registry.npmjs.org/svelte/-/svelte-5.57.2.tgz) |
+| Kit configuration, routes, loads and forms | [Kit 3 migration](https://svelte.dev/docs/kit/migrating-to-sveltekit-3), [load](https://svelte.dev/docs/kit/load), [form actions](https://svelte.dev/docs/kit/form-actions), [fixed 3.1.0 source/types](https://registry.npmjs.org/@sveltejs/kit/-/kit-3.1.0.tgz) |
+| Panda presets, generation and extraction | [Vite integration](https://panda-css.com/docs/get-started/vite), [v2 migration](https://panda-css.com/docs/get-started/upgrading-to-v2), [fixed 2.2.0 development package](https://registry.npmjs.org/@pandacss/dev/-/dev-2.2.0.tgz) |
+| Ark controlled state and accessible parts | [Dialog documentation](https://ark-ui.com/docs/components/dialog), [fixed 5.24.3 Svelte component source](https://registry.npmjs.org/@ark-ui/svelte/-/svelte-5.24.3.tgz) |
+| Drizzle drivers, schemas and transactions | [Fixed matched ORM rc5 source/types](https://registry.npmjs.org/drizzle-orm/-/drizzle-orm-1.0.0-rc.5-5935859.tgz), [matching Kit source/types](https://registry.npmjs.org/drizzle-kit/-/drizzle-kit-1.0.0-rc.5-5935859.tgz) |
+| Generated clients and runtime validation | [Fetch client documentation](https://heyapi.dev/docs/openapi/typescript/clients/fetch), [fixed 0.99.0 generator/plugin declarations](https://registry.npmjs.org/@hey-api/openapi-ts/-/openapi-ts-0.99.0.tgz) |
 
-Initial baseline admissions, eight development tasks with one repeat each:
-
-- **m-01:** every submitted project lacked either its local ESLint command/
-  dependency or the required flat configuration; retained lint assets address it.
-- **m-02:** seven projects lacked an executable Prettier/Svelte formatting gate;
-  task 4 was the measured passing exception. Retained formatter assets address
-  this seven-of-eight failure.
-- **m-03:** tasks 6/7 failed the separate exact TypeScript 6.0.3 dependency-declaration
-  assertion: task 6 supplied only a repaired component, and task 7 declared ^6.0.0.
-  Temporary/shared or locked 6.0.3 execution did not satisfy that declaration gate.
-  The retained dependency asset and version table address this two-of-eight failure.
-
-These lint/format/version requirements were generic frozen evaluation defaults;
-the individual task prompts did not all explicitly request them. The initial
-baseline was 58/77 scored assertions and 75.2778% mean task rate. Final controls
-also failed the lint/format defaults, so measured gains must not be presented as
-proof that unguided functional behavior was generally incorrect.
-
-The example project passed the common gate with requested tests enabled:
-production SSR/client build, zero-warning Svelte checking, ESLint, Prettier,
-SQLite tests, isolated PostgreSQL 18.6 migration/CRUD and production Chromium
-interaction. Configuration assets are unchanged copies; the dependency asset
-selects entries from that verified manifest. No instructional code blocks remain
-after pruning; executable assets and the common check remain verified material.
-
-Three independent section removals each preserved 231/231 assertions across 24
-valid runs per condition. The jointly pruned candidate then passed 77/77 in eight
-fresh development runs. Required empty scaffolds remain; unsupported/redundant
-guidance was not retained merely to fill them. No holdout finding informed a
-candidate revision. The final comparison used 72 fresh valid calls, all 12 tasks,
-both conditions and three repeats, with independent grading and no unverifiable
-assertions. Detailed results and the retained E10 assertion overconstraint are
-in the public report. No post-freeze score-driven assertion or candidate changes
-were made.
+Unversioned official documentation is corroborating material. Selected release
+source/signatures and concrete example checks control version-sensitive claims.
+A runtime check supports the exercised behavior only, not every prose statement
+or every alternate driver/deployment mode. Code blocks are tied to committed
+example files and verified for exact source agreement.
 
 ## Primary release and compatibility sources
 
@@ -111,13 +110,43 @@ svelte.config.js, so lint parser configuration follows verified Kit 3 behavior
 rather than that older plugin README example. The recorded package sources and
 integration checks take precedence over unversioned examples.
 
+## Expanded example verification
+
+The expanded example passed Kit/Panda/Hey API generation, separate SQLite and
+PostgreSQL migration generation, strict Svelte/TypeScript checking (0 errors,
+0 warnings), production build, ESLint with zero warnings and Prettier checking.
+Three Bun tests passed with nine expectations, including the required isolated
+PostgreSQL test; no PostgreSQL skip was counted as coverage. Production Chromium
+checked the concrete UI/form/API/private-HTML paths listed in the
+[validation report](../../../docs/validation/bun-sveltekit-panda-drizzle-guidelines.md).
+
+Actual execution caught a dialog event annotation/lint issue and the adapter's
+HTTPS-origin default for local HTTP forms. The corrected sample infers the DOM
+event type and explicitly configures its canonical origin while retaining CSRF
+checks. These source/runtime checks validate exercised example paths; they are
+not a replacement for an expanded-guide model benchmark.
+
+## Historical tooling experiment
+
+The initial baseline admissions remain relevant to the retained tooling assets:
+m-01 was an absent executable local lint gate/config in 8/8 development tasks;
+m-02 was an absent formatter gate in 7/8, with task 4 passing; m-03 was a separate
+exact TypeScript 6.0.3 dependency-declaration failure in tasks 6/7. These were generic
+frozen defaults, not requirements explicitly repeated in every task prompt.
+The old initial baseline scored 58/77 assertions; the first guided version 77/77.
+
+The later 72 fresh calls scored 350/351 guided versus 261/351 control assertions.
+That minimal tooling-oriented version had already been over-pruned. The score
+does not measure the expanded reference content now present. Five earlier host
+capture failures stayed invalid/ungraded and were replaced only by fresh calls.
+The unchanged primary score retained one E10 assertion overconstraint at 9/10,
+without an Integrity penalty or claim that its ORDER BY behavior was defective.
+
 ## Limits
 
-Explicit on-demand loading measures the effect of instruction content, not native
-activation. Provider dollar cost is unknown. The finite development/holdout
-sample is descriptive. One guided final E10 assertion overconstrains the original
-prompt; its frozen 9/10 score is retained without claiming a sorting defect or
-Integrity penalty. Five earlier ablation capture failures were invalid/ungraded,
-diagnosed and replaced with fresh attempts; they were never converted to scores.
-Public export changes only this audit record and adds the external report;
-operative instructions, release choices, assets and check script are unchanged.
+No expanded-guide coding-model benchmark was run. Automatic native activation is
+untested. Historical experiments used explicit/on_demand developer instructions;
+provider dollar costs are unknown. Frozen historical results and expanded sample
+validation must be reported separately. Source-backed prose is reviewed against
+primary APIs; only the concrete executions listed in the validation report are
+claimed as tested. Private raw experiment artifacts are not bundled here.

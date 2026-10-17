@@ -1,0 +1,10 @@
+{
+  "extends": "$app/tsconfig",
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["$app/types", "bun"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.svelte", "*.ts", "*.js"],
+  "exclude": ["node_modules", "build", ".svelte-kit", "styled-system"]
+}
