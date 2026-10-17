@@ -695,14 +695,22 @@ def main(argv: list[str]) -> int:
             selected = [(target, args.checkout or default_checkout(target.slug, args.checkouts))]
         else:
             selected = [(t, default_checkout(t.slug, args.checkouts)) for t in targets.values()]
-        status = 0
-        for target, checkout in selected:
-            code = apply(checkout.resolve(), target, args.pr) if args.command == "apply" else show_plan(checkout.resolve(), target)
-            status = max(status, code)
-        return status
     except SyncError as error:
         print(f"sync: {error}", file=sys.stderr)
         return 2
+    # One broken checkout must not hide the others: each target runs and reports on its own.
+    results: list[tuple[str, int]] = []
+    for target, checkout in selected:
+        try:
+            code = apply(checkout.resolve(), target, args.pr) if args.command == "apply" else show_plan(checkout.resolve(), target)
+        except SyncError as error:
+            print(f"sync: {target.slug}: {error}", file=sys.stderr)
+            code = 2
+        results.append((target.slug, code))
+    if len(results) > 1:
+        labels = {0: "ok", 1: "conflicts", 2: "error"}
+        print("summary: " + ", ".join(f"{slug} {labels[code]}" for slug, code in results))
+    return max((code for _, code in results), default=0)
 
 
 if __name__ == "__main__":

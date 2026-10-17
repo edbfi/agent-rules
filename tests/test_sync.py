@@ -333,6 +333,17 @@ class Environment(SyncFixture):
         _ = self.git(self.consumer, "branch", branch, "main")
         self.assertIn("already exists with different content", self.assert_exit(1, self.sync("apply")))
 
+    def test_all_continues_past_a_broken_target(self) -> None:
+        write(self.root / "manifest.toml", (self.root / "manifest.toml").read_text(encoding="utf-8")
+              + '\n[[repo]]\nslug = "edbfi/missing"\npublish = true\nguidelines = []\nrules = ["commit"]\n')
+        self.publish_source("second target")
+        result = subprocess.run([sys.executable, "-B", str(SYNC), "plan", "--all", "--checkouts", str(self.base / "checkouts")],
+                                capture_output=True, text=True, env=self.env, check=False)
+        self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+        self.assertIn("deliver stacks/bun-zod", result.stdout)
+        self.assertIn("sync: edbfi/missing: no git checkout", result.stderr)
+        self.assertIn("summary: edbfi/demo ok, edbfi/missing error", result.stdout)
+
     def test_usage_errors(self) -> None:
         result = subprocess.run([sys.executable, "-B", str(SYNC), "plan"], capture_output=True, text=True, env=self.env, check=False)
         self.assertEqual(2, result.returncode)
