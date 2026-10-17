@@ -290,6 +290,16 @@ class Environment(SyncFixture):
         _ = self.assert_exit(0, self.sync("apply"))
         self.assertEqual(".agents/guidelines/", self.show(self.branch(), ".prettierignore"))
 
+    def test_prettier_from_dependencies_without_config_gets_an_ignore_line(self) -> None:
+        self.consumer_commit("package.json", '{"devDependencies": {"prettier": "^3.6.0"}}\n')
+        _ = self.assert_exit(0, self.sync("apply"))
+        self.assertEqual(".agents/guidelines/", self.show(self.branch(), ".prettierignore"))
+
+    def test_no_prettier_means_no_ignore_file(self) -> None:
+        self.consumer_commit("package.json", '{"devDependencies": {"eslint": "^10.0.0"}}\n')
+        _ = self.assert_exit(0, self.sync("apply"))
+        self.assertNotIn(".prettierignore", self.git(self.consumer, "ls-tree", "--name-only", self.branch()))
+
     def test_identity_local_state_and_source_guards(self) -> None:
         _ = self.git(self.consumer, "remote", "set-url", "--push", "origin", "git@github.com:edbfi/elsewhere.git")
         self.assertIn("is not edbfi/demo", self.assert_exit(2, self.sync("plan")))

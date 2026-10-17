@@ -481,12 +481,17 @@ def has_prettier(worktree: Path) -> bool:
     if any((worktree / name).is_file() for name in PRETTIER_CONFIGS):
         return True
     package = worktree / "package.json"
-    if package.is_file():
-        try:
-            return "prettier" in load_json(package)
-        except (ValueError, SyncError):
-            return False
-    return False
+    if not package.is_file():
+        return False
+    try:
+        manifest = load_json(package)
+    except (ValueError, SyncError):
+        return False
+    if "prettier" in manifest:  # inline configuration
+        return True
+    groups = ("dependencies", "devDependencies", "optionalDependencies", "peerDependencies")
+    return any(isinstance(deps := manifest.get(group), dict) and "prettier" in cast("dict[str, object]", deps)
+               for group in groups)  # installed with the default configuration
 
 
 def write_changes(worktree: Path, plan: Plan, lock: Lock, commit: str) -> list[str]:
