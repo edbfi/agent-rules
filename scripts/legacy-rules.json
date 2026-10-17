@@ -1,0 +1,85 @@
+{
+  "_comment": "Flat rules delivered before the guidelines library (agent-rules dfc75f5^). sync.py removes a consumer's copy whose hash is listed here once the target receives replaced_by.",
+  "rules": {
+    "astro-svelte5-islands.md": {
+      "sha256": [
+        "0aa2ab96958ae2905b468a57560378b0a166966d96151fd92d59aecc7554a013"
+      ],
+      "replaced_by": null
+    },
+    "go-1_27-core.md": {
+      "sha256": [
+        "bdeecb8aa78955937b97a1339e2bb4be4a2fa0fc37f49e94f8a87b40d63b1d82"
+      ],
+      "replaced_by": null
+    },
+    "kotlin-2_4-android-app.md": {
+      "sha256": [
+        "d01cb6f5c066867eb5758b7f0ca6eaaab43691d0f116644238ce20e77c7ac9fe"
+      ],
+      "replaced_by": null
+    },
+    "kotlin-2_4-androidtv.md": {
+      "sha256": [
+        "04de8bdff02bd50ee419ff1d4347e433692469a54ba45c102973bf6a502a1c98"
+      ],
+      "replaced_by": null
+    },
+    "python-3_14-core.md": {
+      "sha256": [
+        "0cbd8924589fe7fd360cd5d8b81ce809e5e1c14fa85634cc04a4a97101180f6e"
+      ],
+      "replaced_by": null
+    },
+    "python-3_14-litestar-api.md": {
+      "sha256": [
+        "0e817c655031e91d14c72afc3c7746d604324eb9f7f82ff33ff0e4e4959bff90"
+      ],
+      "replaced_by": null
+    },
+    "rust-1_98-core.md": {
+      "sha256": [
+        "0e7dc8893a3b6969d45fb9e342107e6c8e8dfd35164621efae35856c0cf28738"
+      ],
+      "replaced_by": null
+    },
+    "svelte5-sveltekit-app.md": {
+      "sha256": [
+        "42d8a435a876abea0a944d039ad198d536b912231f380590726467725312dfec",
+        "65c464ccc0b941a68e526c04754ffbbe46cc51888097e1ecbb3f3e23854129a0",
+        "6cee75bcfa8fcaa887900f03b4850c40be2d3da0401d0904ed9337d7b0ee3ec6",
+        "c1d6ce35921aa91b729f9223c3f83b0a7612b7787636ca6e8e3f7dc864cf46b8",
+        "cb2223deb784261dca996171d6a1e4a63e5c820ef6a55b58257bba194e71d0a3",
+        "fc5351e2d20e36e2818b246dd88b5e2fd612ca0c39b7483c31cedb69e57a212f"
+      ],
+      "replaced_by": null
+    },
+    "swift-6_3-appletv.md": {
+      "sha256": [
+        "1eaf1adfdd1e01521f1d405b601986daf694f4cbd324496f41e92e2d4ee6f8f6"
+      ],
+      "replaced_by": null
+    },
+    "swift-6_3-ios-app-rustcore.md": {
+      "sha256": [
+        "161c4112f36580f41a02c228a65bb404bc46d1f3f8529be788463becf15c3dba"
+      ],
+      "replaced_by": null
+    },
+    "swift-6_3-ios-app.md": {
+      "sha256": [
+        "7053280c7e43300da4ea1bad18d9caee8c533a39effd5d9d266103ca09e27ebc"
+      ],
+      "replaced_by": null
+    },
+    "wxt-svelte5-extension.md": {
+      "sha256": [
+        "229c95dabd4c8637787c9581e385cfd8c87d0dbbdbe097dc433750747ad868e6",
+        "4937a5a364ad86c0b7acc216a1afd34ed4721ee3ede6c3ab0754125f32897c10",
+        "8d5dc5de1deff08cf1fb9c0c3534ceb066a2594145627d532ea67eca7020e962",
+        "d6d76f034b3de63ad544d5f97b55c532b5aa99560f7cbf293155564d4ae0e09d"
+      ],
+      "replaced_by": null
+    }
+  }
+}

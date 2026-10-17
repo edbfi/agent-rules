@@ -21,16 +21,26 @@ jobs:
         with: { persist-credentials: false }
       - uses: j178/prek-action@1382ad72dea72f9d53832f2bcb65b3e87a947204 # v3.0.1
         with: { extra-args: "--all-files --hook-stage manual" }
+  stale:
+    # Weekly only: fail when a guidelines pack is past its refresh_after date.
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - run: python3 -I -B scripts/check-library.py --stale
   ci-ok:
     if: always()
-    needs: [checks]
+    needs: [checks, stale]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions: {}
     steps:
       - env:
           NEEDS: ${{ toJSON(needs) }}
-          ALLOWED_SKIPS: ""
+          ALLOWED_SKIPS: "stale"
         run: |
           jq -e --arg skips "$ALLOWED_SKIPS" '
             ($skips | split(",") | map(select(. != ""))) as $allowed
