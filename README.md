@@ -4,7 +4,7 @@ The previous canonical Markdown rules and connected repository list have been
 cleared. `manifest.toml` has no targets or accepted rule hashes, and publishing
 remains disabled.
 
-## Local skill
+## Local skills
 
 The `coding-guidelines-builder` skill is installed in
 `.agents/skills/coding-guidelines-builder/` from
@@ -16,6 +16,11 @@ Install or refresh it locally with:
 ```sh
 bunx skills add https://github.com/edbfi/skills/blob/main/coding-guidelines/coding-guidelines-builder/SKILL.md --skill coding-guidelines-builder --agent codex --yes
 ```
+
+The generated [Bun/SvelteKit/Panda/Drizzle guidelines](.agents/skills/bun-sveltekit-panda-drizzle-guidelines/SKILL.md)
+cover the selected stack and include reusable dependency, lint, formatting and
+verification tools. Their [validation report](docs/validation/bun-sveltekit-panda-drizzle-guidelines.md)
+records the evaluated release pins, measured results and limitations.
 
 ## Development
 
