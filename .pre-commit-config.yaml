@@ -3,17 +3,14 @@
 default_install_hook_types: [pre-commit, commit-msg]
 default_stages: [pre-commit, manual]
 repos:
-  # The whitespace fixers skip rules/: consumers copy those bytes and compare
-  # their hashes, so a fixer must never rewrite a canonical rule.
+  # Delivered bytes (guidelines/, rules/) are already fixer-stable and the library checks
+  # enforce it, so the fixers run everywhere and never change what consumers receive.
   - repo: builtin
     hooks:
       - id: trailing-whitespace
-        exclude: ^rules/
       - id: end-of-file-fixer
-        exclude: ^rules/
       - id: mixed-line-ending
         args: [--fix=lf]
-        exclude: ^rules/
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: check-added-large-files
@@ -56,9 +53,15 @@ repos:
 
   - repo: local
     hooks:
-      - id: rule-shape
-        name: Rule and manifest shape
-        entry: python3 -I -B scripts/check-rules.py
+      - id: library-shape
+        name: Library, rules and manifest
+        entry: python3 -I -B scripts/check-library.py
         language: system
         pass_filenames: false
         always_run: true
+      - id: agent-rules-tests
+        name: check-library and sync tests
+        entry: python3 -I -B -m unittest discover -s tests
+        language: system
+        pass_filenames: false
+        files: ^(scripts|tests|\.agents/skills/coding-guidelines-builder)/

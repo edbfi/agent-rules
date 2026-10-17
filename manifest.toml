@@ -1,7 +1,9 @@
-# No repositories are connected for rule delivery.
+# Explicit opt-in targets for guidelines delivery (scripts/sync.py). Each [[repo]] lists the
+# guidelines entries (components/<id> or stacks/<id>) and hand-written rules it receives; both lists
+# empty retires a target, after which its entry can be deleted. With no targets, keep `repo = []`
+# above [defaults] (below it, TOML would nest the key inside that table).
+schema = 2
 repo = []
 
 [defaults]
 publish = false
-
-[accepted]
