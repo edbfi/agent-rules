@@ -1,5 +1,9 @@
 # agent-rules
 
+<p align="center">
+  <a href="https://github.com/edbfi/agent-rules/actions/workflows/ci.yml?query=branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/edbfi/agent-rules/ci.yml?branch=main&amp;event=push&amp;label=CI&amp;style=flat" alt="CI"></a>
+</p>
+
 The canonical coding-guidelines library for edbfi projects, and the tool that delivers it.
 
 Guidelines are researched, sourced and example-verified Markdown packs produced by
